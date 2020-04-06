@@ -8,6 +8,7 @@ type Project struct {
 	files    *Files
 	folders  *Folders
 	snippets *Snippets
+	writer   *Writer
 }
 
 func (p *Project) initFiles() {
@@ -25,6 +26,12 @@ func (p *Project) initFolders() {
 func (p *Project) initSnippets() {
 	if p.snippets == nil {
 		p.snippets = NewSnippets()
+	}
+}
+
+func (p *Project) initWriter() {
+	if p.writer == nil {
+		p.writer = NewWriter()
 	}
 }
 
@@ -53,4 +60,36 @@ func (p *Project) AddFolder(folders ...*Folder) {
 func (p *Project) AddSnippet(snippets ...*Snippet) {
 	p.initSnippets()
 	p.snippets.Add(snippets...)
+}
+
+func (p *Project) Render() {
+
+	p.initWriter()
+	p.initSnippets()
+
+	err := p.writer.LoadLocalRenderFiles(p.root, p.prefix, p.suffix)
+	if err != nil {
+		Fatal("Load local make files error: ", err)
+	}
+
+	for _, v := range p.snippets.All() {
+		content, suffix, err := v.render(v)
+		if err != nil {
+			Error("Render error: ", err)
+		}
+		content, err = v.formatter(content)
+		if err != nil {
+			Fatal("Format error: ", err)
+		}
+
+		distPath := Join(v.getFilePath())
+		distFile := MakeFileName(v.getFileName(), suffix, v.getSuffix())
+
+		content = p.writer.Compare(distPath, distFile, content, true)
+		if content != "" {
+			p.writer.AddMakeRenderFile(distPath, distFile, content, true)
+		}
+	}
+
+	p.writer.Clean()
 }

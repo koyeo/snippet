@@ -4,8 +4,8 @@ import (
 	"regexp"
 )
 
-func NewCache(fileMap map[string]string) *Cache {
-	return &Cache{fileMap: fileMap}
+func NewCache() *Cache {
+	return &Cache{}
 }
 
 type Cache struct {

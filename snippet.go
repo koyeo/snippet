@@ -4,6 +4,9 @@ import (
 	"path"
 )
 
+type RenderFunc func(snippet *Snippet) (content, suffix string, err error)
+type FormatterFunc func(content string) (string, error)
+
 func NewSnippet(suffix string) *Snippet {
 	return &Snippet{suffix: suffix}
 }
@@ -20,10 +23,12 @@ type Snippet struct {
 	tmpConstants []*Block
 	blocks       []*Block
 	constants    []*Block
+	render       RenderFunc
+	formatter    FormatterFunc
 }
 
-func (p *Snippet) initCache(){
-	if p.cache == nil{
+func (p *Snippet) initCache() {
+	if p.cache == nil {
 		p.cache = NewCache()
 	}
 }
@@ -86,7 +91,7 @@ func (p *Snippet) SetFileName(name string) {
 	p.name = name
 }
 
-func (p *Snippet) GetFileName() string {
+func (p *Snippet) getFileName() string {
 	return p.name
 }
 
@@ -94,7 +99,7 @@ func (p *Snippet) SetSuffix(suffix string) {
 	p.suffix = suffix
 }
 
-func (p *Snippet) GetSuffix() string {
+func (p *Snippet) getSuffix() string {
 	return p.suffix
 }
 
@@ -103,7 +108,7 @@ func (p *Snippet) SetFilePath(path string) {
 	p.path = path
 }
 
-func (p *Snippet) GetFilePath() string {
+func (p *Snippet) getFilePath() string {
 	return p.path
 
 }
@@ -142,4 +147,9 @@ func (p *Snippet) GetBlocks() (snippetBlocks []*Block) {
 		snippetBlocks = append(snippetBlocks, v)
 	}
 	return
+}
+
+func (p *Snippet) SetRender(render RenderFunc, formatter FormatterFunc) {
+	p.render = render
+	p.formatter = formatter
 }

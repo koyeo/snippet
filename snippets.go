@@ -16,7 +16,7 @@ func (p *Snippets) Add(snippets ...*Snippet) {
 	}
 
 	for _, v := range snippets {
-		ident := Join(v.GetFilePath(), v.GetFileName())
+		ident := Join(v.getFilePath(), v.getFileName())
 		if old, ok := p.snippetMap[ident]; !ok {
 			p.snippetList = append(p.snippetList, v)
 			p.snippetMap[ident] = v

@@ -54,9 +54,9 @@ func (p *Writer) AddMakeRenderFile(distPath, distFile, makeContent string, makeD
 	p.renderFiles[filePath].Make = makeContent
 }
 
-func (p *Writer) LoadLocalRenderFiles(path string, suffix ...string) (err error) {
+func (p *Writer) LoadLocalRenderFiles(path string, prefix []string, suffix []string) (err error) {
 
-	files, err := ReadFiles(path, suffix...)
+	files, err := ReadFiles(path, prefix, suffix)
 	for _, file := range files {
 		var content string
 		content, err = ReadFile(file)

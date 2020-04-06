@@ -41,7 +41,7 @@ func ReadFile(path string) (content string, err error) {
 	return
 }
 
-func ReadFiles(path string, suffix ...string) (files []string, err error) {
+func ReadFiles(path string, prefix []string, suffix []string) (files []string, err error) {
 
 	dir, err := ioutil.ReadDir(path)
 	if err != nil {
@@ -53,7 +53,7 @@ func ReadFiles(path string, suffix ...string) (files []string, err error) {
 	for _, fi := range dir {
 		if fi.IsDir() {
 			var dirFiles []string
-			dirFiles, err = ReadFiles(filepath.Join(path, sep, fi.Name()), suffix...)
+			dirFiles, err = ReadFiles(filepath.Join(path, sep, fi.Name()), prefix, suffix, )
 			if err != nil {
 				return
 			}
@@ -117,4 +117,9 @@ func WriteFile(path string, content []byte) (err error) {
 		return
 	}
 	return
+}
+
+func MakeFileName(name, makeSuffix, fileSuffix string) string {
+	fileSuffix = strings.TrimLeft(fileSuffix, ".")
+	return fmt.Sprintf(fmt.Sprintf("%s.%s.%s", name, makeSuffix, fileSuffix))
 }
