@@ -14,6 +14,7 @@ func main() {
 
 	testFolder := snippet.NewFolder()
 	testFolder.SetName("test")
+	testFolder.SetDir("test")
 	testFolder.SetMakePrefix("make-")
 	testFolder.AddFile(testFile)
 
@@ -47,7 +48,7 @@ func addSnippets(project *snippet.Project) {
 	s.AddConstant(golang.NewConstant("ok", `"ok123"`))
 	s.SetRender(golang.Render, golang.Formatter)
 	s.Commit()
-
+	snippet.NewBlock()
 	project.AddSnippet(s)
 }
 

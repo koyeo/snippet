@@ -6,9 +6,14 @@ func NewFolder() *Folder {
 
 type Folder struct {
 	name       string
+	dir        string
 	makePrefix string
 	makeSuffix string
 	files      *Files
+}
+
+func (p *Folder) SetDir(dir string) {
+	p.dir = dir
 }
 
 func (p *Folder) initFiles() {

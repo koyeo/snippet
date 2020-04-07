@@ -21,12 +21,8 @@ func (p *File) fullPath() string {
 	return filepath.Join(p.dir, p.name)
 }
 
-func (p *File) SetPath(path string) {
-	p.dir = path
-}
-
-func (p *File) SetDir(path string) {
-	p.dir = path
+func (p *File) SetDir(dir string) {
+	p.dir = dir
 }
 
 func (p *File) SetName(name string) {
