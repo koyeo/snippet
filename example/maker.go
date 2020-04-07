@@ -47,6 +47,7 @@ func addSnippets(project *snippet.Project) {
 	s.AddTag("build dev")
 	//s.SetMakeSuffix(".mix")
 	s.AddBlock(mainBlock)
+	s.AddConstant(golang.NewConstant("ok", `"ok123"`))
 	s.SetRender(golang.Render, golang.Formatter)
 	s.Commit()
 

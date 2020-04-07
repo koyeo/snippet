@@ -51,7 +51,8 @@ func (p *Snippets) render(project *Project) {
 		distPath := filepath.Join(project.root, v.getDir())
 		makePath := filepath.Join(distPath, distFile)
 		customPath := filepath.Join(distPath, customFile)
-		content = project.writer.compare(makePath, customPath, content, true)
+		filter := v.makePrefix != "" || v.makeSuffix != ""
+		content = project.writer.compare(makePath, customPath, content, filter, true)
 
 		if content != "" {
 			content, err = v.formatter(content)

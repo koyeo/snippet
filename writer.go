@@ -140,7 +140,7 @@ func (p *Writer) loadLocalRenderDirs(path string, prefix []string, suffix []stri
 	return
 }
 
-func (p *Writer) compare(makePath, customPath, makeContent string, makeSnippet bool) string {
+func (p *Writer) compare(makePath, customPath, makeContent string, filter, makeSnippet bool) string {
 
 	if strings.TrimSpace(makePath) == "" {
 		return ""
@@ -159,7 +159,7 @@ func (p *Writer) compare(makePath, customPath, makeContent string, makeSnippet b
 			}
 		}
 
-		makeContent = p.compareContent(makeContent, compareContent)
+		makeContent = p.compareContent(makeContent, compareContent, filter)
 
 	} else {
 		if PathExist(customPath) {
@@ -196,7 +196,7 @@ func (p *Writer) clean() {
 	}
 }
 
-func (p *Writer) compareContent(makeContent, compareContent string) string {
+func (p *Writer) compareContent(makeContent, compareContent string, filter bool) string {
 
 	blockRegex := regexp.MustCompile(`<block\s+rule\s*=\s*"(\S*)">([\s\S]*?)</block>`)
 	res := blockRegex.FindAllStringSubmatch(makeContent, -1)
@@ -204,13 +204,11 @@ func (p *Writer) compareContent(makeContent, compareContent string) string {
 	if len(res) > 0 {
 		count := 0
 		for _, v := range res {
-			if p.matchSegment(v[1], compareContent) {
+			if filter && p.matchSegment(v[1], compareContent) {
 				makeContent = strings.Replace(makeContent, v[0], "", -1)
 			} else {
 				count++
-
 				makeContent = strings.Replace(makeContent, v[0], v[2], -1)
-
 			}
 		}
 

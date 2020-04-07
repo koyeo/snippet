@@ -83,7 +83,7 @@ func Formatter(content string) (output string, err error) {
 	return
 }
 
-func Render(item *snippet.Snippet) (content string, err error) {
+func Render(item *snippet.Snippet) (string, error) {
 	return snippet.Render(fileTpl, prepareRenderGolangData(item))
 }
 
