@@ -4,7 +4,7 @@ import (
 	"path"
 )
 
-type RenderFunc func(snippet *Snippet) (content, suffix string, err error)
+type RenderFunc func(snippet *Snippet) (content string, err error)
 type FormatterFunc func(content string) (string, error)
 
 func NewSnippet(suffix string) *Snippet {
@@ -17,14 +17,24 @@ type Snippet struct {
 	path         string
 	name         string
 	suffix       string
+	makePrefix   string
+	makeSuffix   string
 	namespace    string
-	tag          string
+	tags         []string
 	tmpBlocks    []*Block
 	tmpConstants []*Block
 	blocks       []*Block
 	constants    []*Block
 	render       RenderFunc
 	formatter    FormatterFunc
+}
+
+func (p *Snippet) SetMakeSuffix(suffix string) {
+	p.makeSuffix = suffix
+}
+
+func (p *Snippet) SetMakePrefix(prefix string) {
+	p.makePrefix = prefix
 }
 
 func (p *Snippet) initCache() {
@@ -62,21 +72,21 @@ func (p *Snippet) getFileCache() *Cache {
 	return p.cache
 }
 
-func (p *Snippet) SetTag(tag string) {
-	p.tag = tag
+func (p *Snippet) AddTag(tags ...string) {
+	p.tags = append(p.tags, tags...)
 }
 
-func (p *Snippet) GetTag() string {
-	return p.tag
+func (p *Snippet) GetTags() []string {
+	return p.tags
 }
 
-func (p *Snippet) AddConst(constants ...*Block) {
+func (p *Snippet) AddConstant(constants ...*Block) {
 	for _, v := range constants {
 		p.tmpConstants = append(p.tmpConstants, v)
 	}
 }
 
-func (p *Snippet) GetConsts() (constants []*Block) {
+func (p *Snippet) GetConstants() (constants []*Block) {
 	for _, v := range p.constants {
 		constants = append(constants, v)
 	}
@@ -87,11 +97,11 @@ func (p *Snippet) SetTodo() {
 	p.todo = true
 }
 
-func (p *Snippet) SetFileName(name string) {
+func (p *Snippet) SetName(name string) {
 	p.name = name
 }
 
-func (p *Snippet) getFileName() string {
+func (p *Snippet) getName() string {
 	return p.name
 }
 
@@ -103,19 +113,19 @@ func (p *Snippet) getSuffix() string {
 	return p.suffix
 }
 
-func (p *Snippet) SetFilePath(path string) {
+func (p *Snippet) SetDir(path string) {
 
 	p.path = path
 }
 
-func (p *Snippet) getFilePath() string {
+func (p *Snippet) getDir() string {
 	return p.path
 
 }
 
 func (p *Snippet) Merge(snippets ...*Snippet) {
 	for _, v := range snippets {
-		p.AddConst(v.GetConsts()...)
+		p.AddConstant(v.GetConstants()...)
 		p.AddBlock(v.GetBlocks()...)
 		p.Commit()
 	}

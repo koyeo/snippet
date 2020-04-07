@@ -52,15 +52,14 @@ func ReadFiles(path string, prefix []string, suffix []string) (files []string, e
 
 	for _, fi := range dir {
 		if fi.IsDir() {
-			var dirFiles []string
-			dirFiles, err = ReadFiles(filepath.Join(path, sep, fi.Name()), prefix, suffix, )
+			var items []string
+			items, err = ReadFiles(filepath.Join(path, sep, fi.Name()), prefix, suffix, )
 			if err != nil {
 				return
 			}
-			files = append(files, dirFiles...)
+			files = append(files, items...)
 		} else {
-
-			if HasSuffix(fi.Name(), suffix...) {
+			if HasPrefix(fi.Name(), prefix...) || HasSuffix(fi.Name(), suffix...) {
 				files = append(files, filepath.Join(path, sep, fi.Name()))
 			}
 		}
@@ -69,9 +68,46 @@ func ReadFiles(path string, prefix []string, suffix []string) (files []string, e
 	return
 }
 
-func HasSuffix(fileName string, suffix ...string) bool {
+func ReadDirs(root string, prefix []string, suffix []string) (dirs []string, err error) {
+
+	infos, err := ioutil.ReadDir(root)
+	if err != nil {
+		return
+	}
+
+	sep := string(os.PathSeparator)
+
+	for _, fi := range infos {
+		if fi.IsDir() {
+			if HasPrefix(fi.Name(), prefix...) || HasSuffix(fi.Name(), suffix...) {
+				dirs = append(dirs, filepath.Join(root, sep, fi.Name()))
+			}
+			var items []string
+			items, err = ReadDirs(filepath.Join(root, sep, fi.Name()), prefix, suffix, )
+
+			dirs = append(dirs, items...)
+		}
+	}
+
+	return
+}
+
+func HasPrefix(name string, prefix ...string) bool {
+
+	for _, v := range prefix {
+		v = strings.TrimSpace(v)
+		if v != "" && strings.HasPrefix(name, v) {
+			return true
+		}
+	}
+
+	return false
+}
+
+func HasSuffix(name string, suffix ...string) bool {
 	for _, v := range suffix {
-		if strings.HasSuffix(fileName, v) {
+		v = strings.TrimSpace(v)
+		if v != "" && strings.HasSuffix(name, v) {
 			return true
 		}
 	}
@@ -89,15 +125,7 @@ func MakeDir(path string) {
 
 }
 
-func CustomPath(path string) string {
-
-	path = strings.ReplaceAll(path, fmt.Sprintf(".%s.", "mix"), ".")
-	path = strings.ReplaceAll(path, fmt.Sprintf(".%s.", "todo"), ".")
-
-	return path
-}
-
-func PathExists(path string) bool {
+func PathExist(path string) bool {
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		return false
 	} else if err != nil {
@@ -117,9 +145,4 @@ func WriteFile(path string, content []byte) (err error) {
 		return
 	}
 	return
-}
-
-func MakeFileName(name, makeSuffix, fileSuffix string) string {
-	fileSuffix = strings.TrimLeft(fileSuffix, ".")
-	return fmt.Sprintf(fmt.Sprintf("%s.%s.%s", name, makeSuffix, fileSuffix))
 }

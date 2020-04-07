@@ -5,17 +5,23 @@ import (
 	"encoding/hex"
 	"fmt"
 	"os"
-	"path/filepath"
 	"regexp"
 	"strings"
 )
 
 type RenderFile struct {
-	Local string
-	Make  string
-	Path  string
-	Write bool
-	Diff  bool
+	LocalContent string
+	MakeContent  string
+	MakePath     string
+	CustomPath   string
+	HasWrite     bool
+	CheckDiff    bool
+}
+
+type RenderDir struct {
+	MakePath   string
+	CustomPath string
+	MakeFiles  int
 }
 
 func NewWriter() (c *Writer) {
@@ -26,6 +32,7 @@ func NewWriter() (c *Writer) {
 
 type Writer struct {
 	renderFiles map[string]*RenderFile
+	renderDirs  map[string]*RenderDir
 }
 
 func (p *Writer) initRenderFiles() {
@@ -34,30 +41,68 @@ func (p *Writer) initRenderFiles() {
 	}
 }
 
-func (p *Writer) initRenderFile(filePath string) {
+func (p *Writer) initRenderDirs() {
+	if p.renderDirs == nil {
+		p.renderDirs = make(map[string]*RenderDir)
+	}
+}
+
+func (p *Writer) initRenderFile(makePath string) {
 	p.initRenderFiles()
-	if p.renderFiles[filePath] == nil {
-		p.renderFiles[filePath] = new(RenderFile)
+	if p.renderFiles[makePath] == nil {
+		p.renderFiles[makePath] = &RenderFile{
+			MakePath: makePath,
+		}
+	}
+}
+
+func (p *Writer) initRenderDir(makePath string) {
+	p.initRenderDirs()
+	if p.renderDirs[makePath] == nil {
+		p.renderDirs[makePath] = &RenderDir{
+			MakePath: makePath,
+		}
 	}
 }
 
 func (p *Writer) addLocalRenderFile(filePath, content string) {
 	p.initRenderFile(filePath)
-	p.renderFiles[filePath].Local = content
+	p.renderFiles[filePath].LocalContent = content
 }
 
-func (p *Writer) AddMakeRenderFile(distPath, distFile, makeContent string, makeDiff bool) {
-	filePath := filepath.Join(distPath, distFile)
-	p.initRenderFile(filePath)
-	p.renderFiles[filePath].Path = distPath
-	p.renderFiles[filePath].Diff = makeDiff
-	p.renderFiles[filePath].Make = makeContent
+func (p *Writer) addLocalRenderDir(dirPath string) {
+	p.initRenderDirs()
+	p.renderDirs[dirPath] = &RenderDir{
+		MakePath: dirPath,
+	}
 }
 
-func (p *Writer) LoadLocalRenderFiles(path string, prefix []string, suffix []string) (err error) {
+func (p *Writer) addMakeRenderFile(distPath, makePath, customPath, makeContent string, makeDiff bool) {
+	p.initRenderFile(makePath)
+	p.renderFiles[makePath].MakePath = distPath
+	p.renderFiles[makePath].CustomPath = customPath
+	p.renderFiles[makePath].MakeContent = makeContent
+	p.renderFiles[makePath].CheckDiff = makeDiff
+}
+
+func (p *Writer) addMakeRenderDir(distPath, customPath string, makeFiles int) {
+	p.initRenderDir(distPath)
+	p.renderDirs[distPath].CustomPath = customPath
+	p.renderDirs[distPath].MakeFiles = makeFiles
+}
+
+func (p *Writer) loadLocalRenderFiles(path string, prefix []string, suffix []string) (err error) {
+
+	if !PathExist(path) {
+		return
+	}
 
 	files, err := ReadFiles(path, prefix, suffix)
+	if err != nil {
+		return
+	}
 	for _, file := range files {
+
 		var content string
 		content, err = ReadFile(file)
 		if err != nil {
@@ -69,88 +114,59 @@ func (p *Writer) LoadLocalRenderFiles(path string, prefix []string, suffix []str
 	return
 }
 
-func (p *Writer) Compare(distPath, distFile, makeContent string, makeDiff bool) string {
+func (p *Writer) loadLocalRenderDirs(path string, prefix []string, suffix []string) (err error) {
 
-	if strings.TrimSpace(distPath) == "" {
-		return ""
+	if !PathExist(path) {
+		return
 	}
 
-	MakeDir(Abs(distPath))
+	dirs, err := ReadDirs(path, prefix, suffix)
+	if err != nil {
+		return
+	}
+
+	for _, dir := range dirs {
+		p.addLocalRenderDir(dir)
+	}
+
+	return
+}
+
+func (p *Writer) compare(makePath, customPath, makeContent string, makeSnippet bool) string {
+
+	if strings.TrimSpace(makePath) == "" {
+		return ""
+	}
 
 	var err error
 	var compareContent string
 
-	customPath := CustomPath(Abs(distPath, distFile))
-	if PathExists(customPath) {
-		compareContent, err = ReadFile(customPath)
-		if err != nil {
-			Error(fmt.Sprintf("Read %s error:", customPath), err)
+	if makeSnippet {
+
+		if PathExist(customPath) {
+			compareContent, err = ReadFile(customPath)
+			if err != nil {
+				Error(fmt.Sprintf("Read %s error:", customPath), err)
+				return ""
+			}
+		}
+
+		p.compareContent(makeContent, compareContent)
+
+	} else {
+		if PathExist(customPath) {
 			return ""
 		}
 	}
 
-	return p.renderContent(makeContent, compareContent)
+	return makeContent
 }
 
-func (p *Writer) Make() {
+func (p *Writer) clean() {
 
 	for filePath, renderFile := range p.renderFiles {
-
-		render := true
-
-		if renderFile.Make == "" {
-			render = false
-		}
-
-		if renderFile.Diff {
-
-			if renderFile.Local == "" {
-				if PathExists(filePath) {
-					var err error
-					renderFile.Local, err = ReadFile(filePath)
-					if err != nil {
-						Error("Diff read file error: ", err)
-						os.Exit(1)
-					}
-				}
-			}
-
-			m1 := md5.New()
-			m2 := md5.New()
-
-			m1.Write([]byte(renderFile.Local))
-			m2.Write([]byte(renderFile.Make))
-
-			hash1 := hex.EncodeToString(m1.Sum(nil))
-			hash2 := hex.EncodeToString(m2.Sum(nil))
-
-			if hash1 == hash2 {
-				render = false
-			}
-		}
-
-		if render && !renderFile.Write {
-
-			if renderFile.Path != "" {
-				MakeDir(Abs(renderFile.Path))
-			}
-
-			err := WriteFile(filePath, []byte(renderFile.Make))
-			if err != nil {
-				return
-			}
-
-			renderFile.Write = true
-			MakeFileSuccess(filePath)
-		}
-	}
-}
-
-func (p *Writer) Clean() {
-
-	for filePath, renderFile := range p.renderFiles {
-
-		if renderFile.Make == "" {
+		if renderFile.MakeContent == "" {
+			fmt.Println(filePath, renderFile.MakeContent == "", renderFile.LocalContent)
 			err := Remove(filePath)
 			if err != nil {
 				Error(fmt.Sprintf("Remove file error:"), err)
@@ -159,9 +175,21 @@ func (p *Writer) Clean() {
 			CleanFileSuccess(filePath)
 		}
 	}
+
+	for dirPath, renderDir := range p.renderDirs {
+
+		if renderDir.MakeFiles == 0 || PathExist(renderDir.CustomPath) {
+			err := Remove(dirPath)
+			if err != nil {
+				Error(fmt.Sprintf("Remove Dir error:"), err)
+				return
+			}
+			CleanDirSuccess(dirPath)
+		}
+	}
 }
 
-func (p *Writer) renderContent(makeContent, compareContent string) string {
+func (p *Writer) compareContent(makeContent, compareContent string) string {
 
 	blockRegex := regexp.MustCompile(`<block\s+rule\s*=\s*"(\S*)">([\s\S]*?)</block>`)
 	res := blockRegex.FindAllStringSubmatch(makeContent, -1)
@@ -220,4 +248,57 @@ func (p *Writer) matchSegment(rule string, content string) (match bool) {
 	match = reg.MatchString(content)
 
 	return
+}
+
+func (p *Writer) render() {
+
+	for makePath, renderFile := range p.renderFiles {
+		render := true
+
+		if renderFile.MakeContent == "" {
+			render = false
+		}
+
+		if renderFile.CheckDiff {
+
+			if renderFile.LocalContent == "" {
+				if PathExist(makePath) {
+					var err error
+					renderFile.LocalContent, err = ReadFile(makePath)
+					if err != nil {
+						Error("CheckDiff read file error: ", err)
+						os.Exit(1)
+					}
+				}
+			}
+
+			m1 := md5.New()
+			m2 := md5.New()
+
+			m1.Write([]byte(renderFile.LocalContent))
+			m2.Write([]byte(renderFile.MakeContent))
+
+			hash1 := hex.EncodeToString(m1.Sum(nil))
+			hash2 := hex.EncodeToString(m2.Sum(nil))
+
+			if hash1 == hash2 {
+				render = false
+			}
+		}
+
+		if render && !renderFile.HasWrite {
+
+			if renderFile.MakePath != "" {
+				MakeDir(Abs(renderFile.MakePath))
+			}
+
+			err := WriteFile(makePath, []byte(renderFile.MakeContent))
+			if err != nil {
+				return
+			}
+
+			renderFile.HasWrite = true
+			MakeFileSuccess(makePath)
+		}
+	}
 }

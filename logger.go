@@ -16,7 +16,7 @@ func Done() {
 }
 
 func MakeDone() {
-	log.Println(chalk.Green.Color("MakeService done"))
+	log.Println(chalk.Green.Color("Make done"))
 }
 
 func Success(msg string) {
@@ -32,19 +32,25 @@ func ReadFileSuccess(path string) {
 func MakeDirSuccess(path string) {
 	wd, _ := os.Getwd()
 	path = strings.TrimPrefix(path, wd+"/")
-	log.Println(chalk.Green.Color("MakeService dir:"), chalk.Green.Color(chalk.Bold.TextStyle(path)))
+	log.Println(chalk.Green.Color("Make dir:"), chalk.Green.Color(chalk.Bold.TextStyle(path)))
 }
 
 func MakeFileSuccess(path string) {
 	wd, _ := os.Getwd()
 	path = strings.TrimPrefix(path, wd+"/")
-	log.Println(chalk.Green.Color("MakeService file:"), chalk.Green.Color(chalk.Bold.TextStyle(path)))
+	log.Println(chalk.Green.Color("Make file:"), chalk.Green.Color(chalk.Bold.TextStyle(path)))
 }
 
 func CleanFileSuccess(path string) {
 	wd, _ := os.Getwd()
 	path = strings.TrimPrefix(path, wd+"/")
-	log.Println(chalk.Cyan.Color("Clean file:"), chalk.Cyan.Color(chalk.Bold.TextStyle(path)))
+	log.Println(chalk.Cyan.Color("clean file:"), chalk.Cyan.Color(chalk.Bold.TextStyle(path)))
+}
+
+func CleanDirSuccess(path string) {
+	wd, _ := os.Getwd()
+	path = strings.TrimPrefix(path, wd+"/")
+	log.Println(chalk.Cyan.Color("clean dir:"), chalk.Cyan.Color(chalk.Bold.TextStyle(path)))
 }
 
 func TemplateError(msg string, err error) {
@@ -64,7 +70,7 @@ func Error(msg string, err error) {
 
 func Fatal(msg string, err ...error) {
 
-	if len(err) > 0 {
+	if len(err) > 0 && err[0] != nil {
 		fmt.Println(chalk.Red, msg, err[0].Error())
 	} else {
 		fmt.Println(chalk.Red, msg)

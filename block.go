@@ -54,7 +54,7 @@ func (p *Block) RenderCode(code string, data interface{}) {
 
 	code, err := Render(code, data)
 	if err != nil {
-		panic(err)
+		Fatal("Render code error: ", err)
 	}
 	p.code = code
 	return

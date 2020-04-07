@@ -1,5 +1,9 @@
 package snippet
 
+import (
+	"path/filepath"
+)
+
 func NewFolders() *Folders {
 	return &Folders{}
 }
@@ -16,13 +20,26 @@ func (p *Folders) Add(folders ...*Folder) {
 	}
 
 	for _, v := range folders {
-		if _, ok := p.folderMap[v.path]; !ok {
+		if _, ok := p.folderMap[v.name]; !ok {
 			p.folderList = append(p.folderList, v)
-			p.folderMap[v.path] = true
+			p.folderMap[v.name] = true
 		}
 	}
 }
 
 func (p *Folders) All() []*Folder {
 	return p.folderList
+}
+
+func (p *Folders) render(project *Project) {
+	for _, v := range p.folderList {
+
+		distPath := filepath.Join(project.root, v.makePrefix+v.name+v.makeSuffix)
+		customPath := filepath.Join(project.root, v.name)
+
+		v.initFiles()
+		v.files.render(project, distPath)
+
+		project.writer.addMakeRenderDir(distPath, customPath, len(v.files.All()))
+	}
 }
