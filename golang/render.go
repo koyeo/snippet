@@ -1,4 +1,11 @@
-package snippet
+package golang
+
+import (
+	"fmt"
+	"go/format"
+	"snippet"
+	"strings"
+)
 
 type renderGolangData struct {
 	Tags      []string
@@ -18,7 +25,7 @@ type renderGolangBlock struct {
 	Code string
 }
 
-func prepareRenderGolangData(snippet *Snippet) *renderGolangData {
+func prepareRenderGolangData(snippet *snippet.Snippet) *renderGolangData {
 
 	data := new(renderGolangData)
 
@@ -61,14 +68,23 @@ func prepareRenderGolangData(snippet *Snippet) *renderGolangData {
 	return data
 }
 
-func RenderGolang(snippet *Snippet) (content string, err error) {
-
-	content, err = Render(fileTpl, prepareRenderGolangData(snippet))
+func Formatter(content string) (output string, err error) {
+	bytes, err := format.Source([]byte(content))
 	if err != nil {
+		lines := strings.Split(content, "\n")
+		for k, v := range lines {
+			fmt.Printf("%d: %s\n", k+1, v)
+		}
+		snippet.Fatal(fmt.Sprintf("Foramt file %s error:", content), err)
 		return
 	}
+	output = string(bytes)
 
 	return
+}
+
+func Render(item *snippet.Snippet) (content string, err error) {
+	return snippet.Render(fileTpl, prepareRenderGolangData(item))
 }
 
 var fileTpl = `
@@ -82,9 +98,9 @@ package {{ Namespace }}
 import (
 	{% for pkg in Packages %}
 		{% if pkg.Name != "" %}
-			{{ pkg.Name }} "{{ pkg.MakePath }}"
+			{{ pkg.Name }} "{{ pkg.Path }}"
 		{% else %}
-			"{{ pkg.MakePath }}"
+			"{{ pkg.Path }}"
         {% endif %}
 	{% endfor %}
 )

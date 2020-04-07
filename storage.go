@@ -32,10 +32,15 @@ func Join(paths ...string) string {
 
 func ReadFile(path string) (content string, err error) {
 
+	if !PathExist(path) {
+		return
+	}
+
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
-		panic(err)
+		return
 	}
+
 	content = string(data)
 
 	return

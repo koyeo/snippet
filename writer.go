@@ -151,7 +151,7 @@ func (p *Writer) compare(makePath, customPath, makeContent string, makeSnippet b
 			}
 		}
 
-		p.compareContent(makeContent, compareContent)
+		makeContent = p.compareContent(makeContent, compareContent)
 
 	} else {
 		if PathExist(customPath) {

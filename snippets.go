@@ -39,13 +39,10 @@ func (p *Snippets) All() (snippets []*Snippet) {
 
 func (p *Snippets) render(project *Project) {
 	for _, v := range p.snippetList {
+
 		content, err := v.render(v)
 		if err != nil {
 			Error("Render error: ", err)
-		}
-		content, err = v.formatter(content)
-		if err != nil {
-			Fatal("Format error: ", err)
 		}
 
 		distFile := v.makePrefix + v.name + v.makeSuffix + v.suffix
@@ -54,9 +51,13 @@ func (p *Snippets) render(project *Project) {
 		distPath := filepath.Join(project.root, v.getDir())
 		makePath := filepath.Join(distPath, distFile)
 		customPath := filepath.Join(distPath, customFile)
-
 		content = project.writer.compare(makePath, customPath, content, true)
+
 		if content != "" {
+			content, err = v.formatter(content)
+			if err != nil {
+				Fatal("Format error: ", err)
+			}
 			project.writer.addMakeRenderFile(distPath, makePath, customPath, content, true)
 		}
 	}

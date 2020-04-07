@@ -1,6 +1,9 @@
 package main
 
-import "snippet"
+import (
+	"snippet"
+	"snippet/golang"
+)
 
 func main() {
 
@@ -19,6 +22,38 @@ func main() {
 	project.SetRoot("./snippet-test")
 	project.AddFile(testFile)
 	project.AddFolder(testFolder)
+	addSnippets(project)
 	project.Render()
 
 }
+
+type RenderData struct {
+	Hi string
+}
+
+func addSnippets(project *snippet.Project) {
+	data := new(RenderData)
+	data.Hi = "Hello world"
+
+	packageFmt := snippet.NewPackage("", "fmt")
+
+	mainBlock := snippet.NewBlock(golang.FuncFilter("main"), mainTpl, data)
+	mainBlock.UsePackage(packageFmt)
+
+	s := snippet.NewSnippet(snippet.SuffixGo)
+	s.SetName("test")
+	s.SetNamespace("main")
+	s.SetDir("snippets")
+	s.AddBlock(mainBlock)
+	s.SetRender(golang.Render, golang.Formatter)
+	s.Commit()
+
+	project.AddSnippet(s)
+}
+
+const mainTpl = `
+<\n>
+func main(){
+	fmt.Println("{{ Hi }}")
+}
+`
