@@ -46,7 +46,7 @@ func ReadFile(path string) (content string, err error) {
 	return
 }
 
-func ReadFiles(path string, prefix []string, suffix []string) (files []string, err error) {
+func ReadFiles(debug bool, path string, ignore []string, prefix []string, suffix []string) (files []string, err error) {
 
 	dir, err := ioutil.ReadDir(path)
 	if err != nil {
@@ -56,16 +56,35 @@ func ReadFiles(path string, prefix []string, suffix []string) (files []string, e
 	sep := string(os.PathSeparator)
 
 	for _, fi := range dir {
+		path := filepath.Join(path, sep, fi.Name())
+		items := strings.Split(path, sep)
+		subPath := strings.Join(items[1:], sep)
+		var ok bool
+		for _, v := range ignore {
+			ok, err = filepath.Match(v, subPath)
+			if err != nil {
+				Fatal("Match ignore path error: ", err)
+			}
+			if ok {
+				break
+			}
+		}
+		if ok {
+			if debug {
+				IgnoreReadPath("Read files ignore path:", subPath)
+			}
+			continue
+		}
 		if fi.IsDir() {
 			var items []string
-			items, err = ReadFiles(filepath.Join(path, sep, fi.Name()), prefix, suffix, )
+			items, err = ReadFiles(debug, path, ignore, prefix, suffix, )
 			if err != nil {
 				return
 			}
 			files = append(files, items...)
 		} else {
 			if HasPrefix(fi.Name(), prefix...) || HasSuffix(fi.Name(), suffix...) {
-				files = append(files, filepath.Join(path, sep, fi.Name()))
+				files = append(files, path)
 			}
 		}
 	}
@@ -73,9 +92,9 @@ func ReadFiles(path string, prefix []string, suffix []string) (files []string, e
 	return
 }
 
-func ReadDirs(root string, prefix []string, suffix []string) (dirs []string, err error) {
+func ReadDirs(debug bool, path string, ignore []string, prefix []string, suffix []string) (dirs []string, err error) {
 
-	infos, err := ioutil.ReadDir(root)
+	infos, err := ioutil.ReadDir(path)
 	if err != nil {
 		return
 	}
@@ -83,12 +102,31 @@ func ReadDirs(root string, prefix []string, suffix []string) (dirs []string, err
 	sep := string(os.PathSeparator)
 
 	for _, fi := range infos {
+		path := filepath.Join(path, sep, fi.Name())
+		items := strings.Split(path, sep)
+		subPath := strings.Join(items[1:], sep)
+		var ok bool
+		for _, v := range ignore {
+			ok, err = filepath.Match(v, subPath)
+			if err != nil {
+				Fatal("Match ignore path error: ", err)
+			}
+			if ok {
+				break
+			}
+		}
+		if ok {
+			if debug {
+				IgnoreReadPath("Read dirs ignore path:", subPath)
+			}
+			continue
+		}
 		if fi.IsDir() {
 			if HasPrefix(fi.Name(), prefix...) || HasSuffix(fi.Name(), suffix...) {
-				dirs = append(dirs, filepath.Join(root, sep, fi.Name()))
+				dirs = append(dirs, filepath.Join(path, sep, fi.Name()))
 			}
 			var items []string
-			items, err = ReadDirs(filepath.Join(root, sep, fi.Name()), prefix, suffix, )
+			items, err = ReadDirs(debug, path, ignore, prefix, suffix)
 
 			dirs = append(dirs, items...)
 		}

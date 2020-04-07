@@ -30,6 +30,10 @@ ok!!!
 	project.AddFile(testFile)
 	project.AddFolder(testFolder)
 	addSnippets(project)
+	project.SetIgnore(
+		"node_modules",
+	)
+	project.SetDebug()
 	project.Render()
 
 }

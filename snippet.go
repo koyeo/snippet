@@ -27,6 +27,7 @@ type Snippet struct {
 	constants    []*Block
 	render       RenderFunc
 	formatter    FormatterFunc
+	ignore       bool
 }
 
 func (p *Snippet) SetMakeSuffix(suffix string) {

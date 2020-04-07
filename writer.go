@@ -90,7 +90,7 @@ func (p *Writer) addMakeRenderDir(distPath, customPath string, makeFiles int) {
 	p.renderDirs[distPath].MakeFiles = makeFiles
 }
 
-func (p *Writer) loadLocalRenderFiles(path string, prefix []string, suffix []string) (err error) {
+func (p *Writer) loadLocalRenderFiles(debug bool, path string, ignore, prefix, suffix []string) (err error) {
 
 	if len(prefix) == 0 && len(suffix) == 0 {
 		return
@@ -100,12 +100,11 @@ func (p *Writer) loadLocalRenderFiles(path string, prefix []string, suffix []str
 		return
 	}
 
-	files, err := ReadFiles(path, prefix, suffix)
+	files, err := ReadFiles(debug, path, ignore, prefix, suffix)
 	if err != nil {
 		return
 	}
 	for _, file := range files {
-
 		var content string
 		content, err = ReadFile(file)
 		if err != nil {
@@ -117,7 +116,7 @@ func (p *Writer) loadLocalRenderFiles(path string, prefix []string, suffix []str
 	return
 }
 
-func (p *Writer) loadLocalRenderDirs(path string, prefix []string, suffix []string) (err error) {
+func (p *Writer) loadLocalRenderDirs(debug bool, path string, ignore, prefix, suffix []string) (err error) {
 
 	if len(prefix) == 0 && len(suffix) == 0 {
 		return
@@ -127,7 +126,7 @@ func (p *Writer) loadLocalRenderDirs(path string, prefix []string, suffix []stri
 		return
 	}
 
-	dirs, err := ReadDirs(path, prefix, suffix)
+	dirs, err := ReadDirs(debug, path, ignore, prefix, suffix)
 	if err != nil {
 		return
 	}
@@ -152,13 +151,18 @@ func (p *Writer) compareSnippet(snippet *Snippet, customPath string) {
 	}
 
 	items := append(snippet.constants, snippet.blocks...)
+	i := 0
 	for _, v := range items {
 		if v.filter != nil {
 			if p.matchSegment(v.filter.GetRule(), compareContent) {
 				v.exist = true
+				i++
 				continue
 			}
 		}
+	}
+	if i == len(items) {
+		snippet.ignore = true
 	}
 }
 

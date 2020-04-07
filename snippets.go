@@ -46,14 +46,15 @@ func (p *Snippets) render(project *Project) {
 		distPath := filepath.Join(project.root, v.getDir())
 		makePath := filepath.Join(distPath, distFile)
 		customPath := filepath.Join(distPath, customFile)
-
-		//filter := v.makePrefix != "" || v.makeSuffix != ""
 		project.writer.compareSnippet(v, customPath)
+		if v.ignore {
+			continue
+		}
+
 		content, err := v.render(v)
 		if err != nil {
 			Fatal("Render error: ", err)
 		}
-
 		if content != "" {
 			content, err = v.formatter(content)
 			if err != nil {

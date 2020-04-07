@@ -10,11 +10,20 @@ type Project struct {
 	makeFilePrefix *Collection
 	makeDirSuffix  *Collection
 	makeDirPrefix  *Collection
-	ignore         map[string]bool
+	ignore         []string
 	files          *Files
 	folders        *Folders
 	snippets       *Snippets
 	writer         *Writer
+	debug          bool
+}
+
+func (p *Project) SetDebug() {
+	p.debug = true
+}
+
+func (p *Project) SetIgnore(ignore ...string) {
+	p.ignore = ignore
 }
 
 func (p *Project) initFiles() {
@@ -148,7 +157,7 @@ func (p *Project) loadLocalFiles() {
 	p.initMakeFilePrefix()
 	p.initMakeFileSuffix()
 
-	err := p.writer.loadLocalRenderFiles(p.root, p.makeFilePrefix.All(), p.makeFileSuffix.All())
+	err := p.writer.loadLocalRenderFiles(p.debug, p.root, p.ignore, p.makeFilePrefix.All(), p.makeFileSuffix.All())
 	if err != nil {
 		Fatal("Load local render files error: ", err)
 	}
@@ -159,7 +168,7 @@ func (p *Project) loadLocalDirs() {
 	p.initMakeDirPrefix()
 	p.initMakeDirSuffix()
 
-	err := p.writer.loadLocalRenderDirs(p.root, p.makeFilePrefix.All(), p.makeFileSuffix.All())
+	err := p.writer.loadLocalRenderDirs(p.debug, p.root, p.ignore, p.makeFilePrefix.All(), p.makeFileSuffix.All())
 	if err != nil {
 		Fatal("Load local render dirs error: ", err)
 	}
