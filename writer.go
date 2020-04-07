@@ -93,6 +93,10 @@ func (p *Writer) addMakeRenderDir(distPath, customPath string, makeFiles int) {
 
 func (p *Writer) loadLocalRenderFiles(path string, prefix []string, suffix []string) (err error) {
 
+	if len(prefix) == 0 && len(suffix) == 0 {
+		return
+	}
+
 	if !PathExist(path) {
 		return
 	}
@@ -115,6 +119,10 @@ func (p *Writer) loadLocalRenderFiles(path string, prefix []string, suffix []str
 }
 
 func (p *Writer) loadLocalRenderDirs(path string, prefix []string, suffix []string) (err error) {
+
+	if len(prefix) == 0 && len(suffix) == 0 {
+		return
+	}
 
 	if !PathExist(path) {
 		return
@@ -166,7 +174,6 @@ func (p *Writer) clean() {
 
 	for filePath, renderFile := range p.renderFiles {
 		if renderFile.MakeContent == "" {
-			fmt.Println(filePath, renderFile.MakeContent == "", renderFile.LocalContent)
 			err := Remove(filePath)
 			if err != nil {
 				Error(fmt.Sprintf("Remove file error:"), err)

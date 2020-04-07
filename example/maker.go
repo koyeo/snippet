@@ -44,6 +44,8 @@ func addSnippets(project *snippet.Project) {
 	s.SetName("test")
 	s.SetNamespace("main")
 	s.SetDir("snippets")
+	s.AddTag("build dev")
+	//s.SetMakeSuffix(".mix")
 	s.AddBlock(mainBlock)
 	s.SetRender(golang.Render, golang.Formatter)
 	s.Commit()

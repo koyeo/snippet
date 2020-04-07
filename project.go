@@ -105,25 +105,41 @@ func (p *Project) collectMakePrefixAndSuffix() {
 
 	p.initSnippets()
 	for _, v := range p.snippets.All() {
-		p.makeFilePrefix.Add(v.makePrefix)
-		p.makeFileSuffix.Add(v.makeSuffix + v.suffix)
+		if v.makePrefix != "" {
+			p.makeFilePrefix.Add(v.makePrefix)
+		}
+		if v.makeSuffix != "" {
+			p.makeFileSuffix.Add(v.makeSuffix + v.suffix)
+		}
 	}
 
 	p.initFiles()
 	for _, v := range p.files.All() {
-		p.makeFilePrefix.Add(v.makePrefix)
-		p.makeFileSuffix.Add(v.makeSuffix + v.suffix)
+		if v.makePrefix != "" {
+			p.makeFilePrefix.Add(v.makePrefix)
+		}
+		if v.makeSuffix != "" {
+			p.makeFileSuffix.Add(v.makeSuffix + v.suffix)
+		}
 	}
 
 	p.initFolders()
 	for _, v := range p.folders.All() {
 		v.initFiles()
 		for _, vv := range v.files.All() {
-			p.makeFilePrefix.Add(vv.makePrefix)
-			p.makeFileSuffix.Add(vv.makeSuffix + vv.suffix)
+			if vv.makePrefix != "" {
+				p.makeFilePrefix.Add(vv.makePrefix)
+			}
+			if vv.makeSuffix != "" {
+				p.makeFileSuffix.Add(vv.makeSuffix + vv.suffix)
+			}
 		}
-		p.makeDirPrefix.Add(v.makePrefix)
-		p.makeDirSuffix.Add(v.makeSuffix)
+		if v.makePrefix != "" {
+			p.makeDirPrefix.Add(v.makePrefix)
+		}
+		if v.makeSuffix != "" {
+			p.makeDirSuffix.Add(v.makeSuffix)
+		}
 	}
 }
 
