@@ -21,7 +21,6 @@ type renderGolangPackage struct {
 }
 
 type renderGolangBlock struct {
-	Rule string
 	Code string
 }
 
@@ -40,27 +39,17 @@ func prepareRenderGolangData(snippet *snippet.Snippet) *renderGolangData {
 	}
 
 	for _, v := range snippet.GetConstants() {
-		if v.GetFilter() != nil {
+		if !v.Exist() {
 			data.Constants = append(data.Constants, &renderGolangBlock{
-				Rule: v.GetFilter().GetRule(),
-				Code: v.GetCode(),
-			})
-		} else {
-			data.Constants = append(data.Constants, &renderGolangBlock{
-				Code: v.GetCode(),
+				Code: v.Code(),
 			})
 		}
 	}
 
 	for _, v := range snippet.GetBlocks() {
-		if v.GetFilter() != nil {
+		if !v.Exist() {
 			data.Blocks = append(data.Blocks, &renderGolangBlock{
-				Rule: v.GetFilter().GetRule(),
-				Code: v.GetCode(),
-			})
-		} else {
-			data.Blocks = append(data.Blocks, &renderGolangBlock{
-				Code: v.GetCode(),
+				Code: v.Code(),
 			})
 		}
 	}
@@ -110,17 +99,13 @@ import (
 <\n>
 const (
 	{% for block in Constants %}
-	<block rule="{{ block.Rule }}">
 		{{ block.Code }}
-	</block>
 	{% endfor %}
 )
 {% endif %}
 
 <\n>
 {% for block in Blocks %}
-<block rule="{{ block.Rule }}">
 {{ block.Code }}
-</block>
 {% endfor %}
 `

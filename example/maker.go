@@ -37,7 +37,7 @@ func addSnippets(project *snippet.Project) {
 
 	packageFmt := snippet.NewPackage("", "fmt")
 
-	mainBlock := snippet.NewBlock(golang.FuncFilter("main"), mainTpl, data)
+	mainBlock := golang.NewFunc("main", mainTpl, data)
 	mainBlock.UsePackage(packageFmt)
 
 	s := snippet.NewSnippet(snippet.SuffixGo)
@@ -45,7 +45,7 @@ func addSnippets(project *snippet.Project) {
 	s.SetNamespace("main")
 	s.SetDir("snippets")
 	s.AddTag("build dev")
-	//s.SetMakeSuffix(".mix")
+	s.SetMakeSuffix(".mix")
 	s.AddBlock(mainBlock)
 	s.AddConstant(golang.NewConstant("ok", `"ok123"`))
 	s.SetRender(golang.Render, golang.Formatter)

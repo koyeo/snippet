@@ -140,34 +140,27 @@ func (p *Writer) loadLocalRenderDirs(path string, prefix []string, suffix []stri
 	return
 }
 
-func (p *Writer) compare(makePath, customPath, makeContent string, filter, makeSnippet bool) string {
-
-	if strings.TrimSpace(makePath) == "" {
-		return ""
-	}
+func (p *Writer) compareSnippet(snippet *Snippet, customPath string) {
 
 	var err error
 	var compareContent string
 
-	if makeSnippet {
-
-		if PathExist(customPath) {
-			compareContent, err = ReadFile(customPath)
-			if err != nil {
-				Error(fmt.Sprintf("Read %s error:", customPath), err)
-				return ""
-			}
-		}
-
-		makeContent = p.compareContent(makeContent, compareContent, filter)
-
-	} else {
-		if PathExist(customPath) {
-			return ""
+	if PathExist(customPath) {
+		compareContent, err = ReadFile(customPath)
+		if err != nil {
+			Fatal(fmt.Sprintf("Read %s error:", customPath), err)
 		}
 	}
 
-	return makeContent
+	items := append(snippet.constants, snippet.blocks...)
+	for _, v := range items {
+		if v.filter != nil {
+			if p.matchSegment(v.filter.GetRule(), compareContent) {
+				v.exist = true
+				continue
+			}
+		}
+	}
 }
 
 func (p *Writer) clean() {
@@ -196,30 +189,11 @@ func (p *Writer) clean() {
 	}
 }
 
-func (p *Writer) compareContent(makeContent, compareContent string, filter bool) string {
-
-	blockRegex := regexp.MustCompile(`<block\s+rule\s*=\s*"(\S*)">([\s\S]*?)</block>`)
-	res := blockRegex.FindAllStringSubmatch(makeContent, -1)
-
-	if len(res) > 0 {
-		count := 0
-		for _, v := range res {
-			if filter && p.matchSegment(v[1], compareContent) {
-				makeContent = strings.Replace(makeContent, v[0], "", -1)
-			} else {
-				count++
-				makeContent = strings.Replace(makeContent, v[0], v[2], -1)
-			}
-		}
-
-		if count == 0 {
-			return ""
-		}
-	}
+func (p *Writer) filterTags(content string) string {
 
 	newLineRegex := regexp.MustCompile(`<\s*\\n\s*>`)
 	spaceRegex := regexp.MustCompile(`<\s*\\s\s*>`)
-	segments := strings.Split(makeContent, "\n")
+	segments := strings.Split(content, "\n")
 	results := make([]string, 0)
 
 	for _, v := range segments {
@@ -240,7 +214,6 @@ func (p *Writer) compareContent(makeContent, compareContent string, filter bool)
 	}
 
 	return strings.Join(results, "\n")
-
 }
 
 func (p *Writer) matchSegment(rule string, content string) (match bool) {

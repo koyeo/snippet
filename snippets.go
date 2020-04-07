@@ -40,19 +40,20 @@ func (p *Snippets) All() (snippets []*Snippet) {
 func (p *Snippets) render(project *Project) {
 	for _, v := range p.snippetList {
 
-		content, err := v.render(v)
-		if err != nil {
-			Error("Render error: ", err)
-		}
-
 		distFile := v.makePrefix + v.name + v.makeSuffix + v.suffix
 		customFile := v.name + v.suffix
 
 		distPath := filepath.Join(project.root, v.getDir())
 		makePath := filepath.Join(distPath, distFile)
 		customPath := filepath.Join(distPath, customFile)
-		filter := v.makePrefix != "" || v.makeSuffix != ""
-		content = project.writer.compare(makePath, customPath, content, filter, true)
+
+		//filter := v.makePrefix != "" || v.makeSuffix != ""
+		project.writer.compareSnippet(v, customPath)
+		content, err := v.render(v)
+		if err != nil {
+			Fatal("Render error: ", err)
+		}
+		content = project.writer.filterTags(content)
 
 		if content != "" {
 			content, err = v.formatter(content)

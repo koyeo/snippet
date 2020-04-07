@@ -24,6 +24,11 @@ type Block struct {
 	filter   Filter
 	code     string
 	packages *Packages
+	exist    bool
+}
+
+func (p *Block) Exist() bool {
+	return p.exist
 }
 
 func (p *Block) initPackages() {
@@ -37,7 +42,7 @@ func (p *Block) UsePackage(packages ...*Package) {
 	p.packages.Add(packages...)
 }
 
-func (p *Block) GetPackages() []*Package {
+func (p *Block) Packages() []*Package {
 	p.initPackages()
 	return p.packages.All()
 }
@@ -46,7 +51,7 @@ func (p *Block) SetFilter(filter Filter) {
 	p.filter = filter
 }
 
-func (p *Block) GetFilter() (filter Filter) {
+func (p *Block) Filter() (filter Filter) {
 	return p.filter
 }
 
@@ -60,6 +65,6 @@ func (p *Block) RenderCode(code string, data interface{}) {
 	return
 }
 
-func (p *Block) GetCode() string {
+func (p *Block) Code() string {
 	return p.code
 }

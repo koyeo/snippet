@@ -141,7 +141,10 @@ func (p *Snippet) GetNamespace() string {
 
 func (p *Snippet) GetPackages() (packages []*Package) {
 	for _, v := range p.blocks {
-		packages = append(packages, v.GetPackages()...)
+		if v.exist {
+			continue
+		}
+		packages = append(packages, v.Packages()...)
 	}
 	return
 }
