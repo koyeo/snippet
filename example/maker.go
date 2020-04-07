@@ -6,36 +6,22 @@ import (
 )
 
 func main() {
-
-	data := struct {
-		OK string
-	}{OK: "123"}
 	testFile := snippet.NewFile()
-	testFile.SetName("test2")
+	testFile.SetName("test")
 	testFile.SetSuffix(".md")
-	testFile.SetMakeSuffix(".mix")
-	testFile.SetContent(`
-你好世界
-
-ok!!!
-`, data)
+	testFile.SetMakeSuffix(".make")
+	testFile.SetContent(`Hello world!`, nil)
 
 	testFolder := snippet.NewFolder()
-	testFolder.SetName("components")
-	testFolder.SetMakePrefix("mix-")
+	testFolder.SetName("test")
+	testFolder.SetMakePrefix("make-")
 	testFolder.AddFile(testFile)
 
 	project := snippet.NewProject()
-	project.SetRoot("./snippet-test")
+	project.SetRoot("./make-example")
 	project.AddFile(testFile)
 	project.AddFolder(testFolder)
-	addSnippets(project)
-	project.SetIgnore(
-		"node_modules",
-	)
-	project.SetDebug()
 	project.Render()
-
 }
 
 type RenderData struct {
