@@ -7,11 +7,18 @@ import (
 
 func main() {
 
+	data := struct {
+		OK string
+	}{OK: "123"}
 	testFile := snippet.NewFile()
 	testFile.SetName("test2")
 	testFile.SetSuffix(".md")
 	testFile.SetMakeSuffix(".mix")
-	testFile.SetContent(`你好世界`, nil)
+	testFile.SetContent(`
+你好世界
+
+ok!!!
+`, data)
 
 	testFolder := snippet.NewFolder()
 	testFolder.SetName("components")
@@ -57,6 +64,10 @@ func addSnippets(project *snippet.Project) {
 const mainTpl = `
 <\n>
 func main(){
+
+
+
+
 	fmt.Println("{{ Hi }}")
 }
 `

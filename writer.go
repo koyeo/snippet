@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"os"
 	"regexp"
-	"strings"
 )
 
 type RenderFile struct {
@@ -187,33 +186,6 @@ func (p *Writer) clean() {
 			CleanDirSuccess(dirPath)
 		}
 	}
-}
-
-func (p *Writer) filterTags(content string) string {
-
-	newLineRegex := regexp.MustCompile(`<\s*\\n\s*>`)
-	spaceRegex := regexp.MustCompile(`<\s*\\s\s*>`)
-	segments := strings.Split(content, "\n")
-	results := make([]string, 0)
-
-	for _, v := range segments {
-
-		v = strings.TrimSpace(v)
-
-		if newLineRegex.MatchString(v) {
-			results = append(results, "")
-			v = newLineRegex.ReplaceAllString(v, "")
-		}
-		if spaceRegex.MatchString(v) {
-			v = spaceRegex.ReplaceAllString(v, " ")
-		}
-
-		if v != "" {
-			results = append(results, v)
-		}
-	}
-
-	return strings.Join(results, "\n")
 }
 
 func (p *Writer) matchSegment(rule string, content string) (match bool) {

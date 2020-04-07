@@ -53,7 +53,6 @@ func (p *Snippets) render(project *Project) {
 		if err != nil {
 			Fatal("Render error: ", err)
 		}
-		content = project.writer.filterTags(content)
 
 		if content != "" {
 			content, err = v.formatter(content)
