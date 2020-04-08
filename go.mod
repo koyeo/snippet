@@ -1,4 +1,4 @@
-module snippet
+module github.com/koyeo/snippet
 
 go 1.13
 
