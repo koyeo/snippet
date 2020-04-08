@@ -163,7 +163,11 @@ func (p *Snippet) GetBlocks() (snippetBlocks []*Block) {
 	return
 }
 
-func (p *Snippet) SetRender(render RenderFunc, formatter FormatterFunc) {
+func (p *Snippet) SetRender(render RenderFunc) {
 	p.render = render
+
+}
+
+func (p *Snippet) SetFormatter(formatter FormatterFunc) {
 	p.formatter = formatter
 }

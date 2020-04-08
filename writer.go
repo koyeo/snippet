@@ -180,7 +180,6 @@ func (p *Writer) clean() {
 	}
 
 	for dirPath, renderDir := range p.renderDirs {
-
 		if renderDir.MakeFiles == 0 || PathExist(renderDir.CustomPath) {
 			err := Remove(dirPath)
 			if err != nil {

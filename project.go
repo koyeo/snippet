@@ -168,7 +168,7 @@ func (p *Project) loadLocalDirs() {
 	p.initMakeDirPrefix()
 	p.initMakeDirSuffix()
 
-	err := p.writer.loadLocalRenderDirs(p.debug, p.root, p.ignore, p.makeFilePrefix.All(), p.makeFileSuffix.All())
+	err := p.writer.loadLocalRenderDirs(p.debug, p.root, p.ignore, p.makeDirPrefix.All(), p.makeDirSuffix.All())
 	if err != nil {
 		Fatal("Load local render dirs error: ", err)
 	}

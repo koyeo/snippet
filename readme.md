@@ -355,4 +355,4 @@ block.UsePackage(packageFmt, packageMySql, ...)
 
 ## 去重机制
 
-## 
+## 完整示例

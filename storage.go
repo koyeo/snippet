@@ -121,9 +121,10 @@ func ReadDirs(debug bool, path string, ignore []string, prefix []string, suffix 
 			}
 			continue
 		}
+
 		if fi.IsDir() {
 			if HasPrefix(fi.Name(), prefix...) || HasSuffix(fi.Name(), suffix...) {
-				dirs = append(dirs, filepath.Join(path, sep, fi.Name()))
+				dirs = append(dirs, path)
 			}
 			var items []string
 			items, err = ReadDirs(debug, path, ignore, prefix, suffix)

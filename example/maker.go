@@ -8,13 +8,14 @@ import (
 func main() {
 	testFile := snippet.NewFile()
 	testFile.SetName("test")
+	testFile.SetDir("file-dir")
 	testFile.SetSuffix(".md")
 	testFile.SetMakeSuffix(".make")
 	testFile.SetContent(`Hello world!`, nil)
 
 	testFolder := snippet.NewFolder()
 	testFolder.SetName("test")
-	testFolder.SetDir("test")
+	testFolder.SetDir("folder-dir")
 	testFolder.SetMakePrefix("make-")
 	testFolder.AddFile(testFile)
 
@@ -46,9 +47,10 @@ func addSnippets(project *snippet.Project) {
 	s.SetMakeSuffix(".mix")
 	s.AddBlock(mainBlock)
 	s.AddConstant(golang.NewConstant("ok", `"ok123"`))
-	s.SetRender(golang.Render, golang.Formatter)
+	s.SetRender(golang.Render)
+	s.SetFormatter(golang.Formatter)
 	s.Commit()
-	snippet.NewBlock()
+
 	project.AddSnippet(s)
 }
 
