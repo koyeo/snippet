@@ -48,7 +48,7 @@ func (p *Files) render(project *Project, root string) {
 		customPath := filepath.Join(distPath, customFile)
 
 		if !PathExist(customPath) {
-			project.writer.addMakeRenderFile(distPath, makePath, customPath, v.code, true)
+			project.writer.addMakeRenderFile(distPath, makePath, customPath, v.content, true)
 		}
 	}
 }

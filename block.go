@@ -4,7 +4,7 @@ func NewBlock(filter Filter, code string, data interface{}) *Block {
 	b := &Block{
 		filter: filter,
 	}
-	b.RenderCode(code, data)
+	b.SetCode(code, data)
 	return b
 }
 
@@ -16,7 +16,7 @@ func NewDocument(document string) *Block {
 	b := &Block{
 		filter: nil,
 	}
-	b.RenderCode(document, nil)
+	b.SetCode(document, nil)
 	return b
 }
 
@@ -55,11 +55,11 @@ func (p *Block) Filter() (filter Filter) {
 	return p.filter
 }
 
-func (p *Block) RenderCode(code string, data interface{}) {
+func (p *Block) SetCode(code string, data interface{}) {
 
 	code, err := Render(code, data)
 	if err != nil {
-		Fatal("Render code error: ", err)
+		Fatal("Render content error: ", err)
 	}
 	p.code = code
 	return

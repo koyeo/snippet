@@ -14,7 +14,7 @@ type File struct {
 	suffix     string
 	makePrefix string
 	makeSuffix string
-	code       string
+	content    string
 }
 
 func (p *File) fullPath() string {
@@ -41,11 +41,11 @@ func (p *File) SetMakePrefix(makePrefix string) {
 	p.makePrefix = makePrefix
 }
 
-func (p *File) SetContent(code string, data interface{}) {
-	code, err := Render(code, data)
+func (p *File) SetContent(content string, data interface{}) {
+	content, err := Render(content, data)
 	if err != nil {
-		Fatal("Render code error: ", err)
+		Fatal("Render content error: ", err)
 	}
-	p.code = code
+	p.content = content
 	return
 }

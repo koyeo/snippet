@@ -72,7 +72,7 @@ Hello world!
 project := snippet.NewProject()
 ```
 
-### 4.2 项目路径
+### 4.2 设置项目路径
 
 ```go
 project.SetRoot("./make-example")
@@ -80,7 +80,7 @@ project.SetRoot("./make-example")
 
 用来存放生成的所有文件和目录，同时也是自动去除冗余文件的遍历根目录。
 
-### 4.3 遍历忽略路径
+### 4.3 设置遍历忽略路径
 
 ```go
 project.SetIgnore(
@@ -90,7 +90,7 @@ project.SetIgnore(
 ```
 可以设置第三方库的目录，提高遍历性能。
 
-### 4.4 调试模式
+### 4.4 开启调试模式
 
 ```go
 project.SetDebug()
@@ -176,32 +176,32 @@ file.SetContent(template, data)
 
 生成目录是以目录为去重单位，当同位置有不带后缀和前缀的同名目录存在时，便不会执行目录及其内部文件的生成操作；同时原来生成的目录将会被清除。
 
-### 新目录
+### 6.1 新目录
 
 ```go
 folder := snippet.NewFolder()
 ```
 
-### 设置目录名称
+### 6.2 设置目录名称
 
 ```go
 folder.SetName("test")
 ```
 
-### 设置目录路径
+### 6.3 设置目录路径
 
 ```go
 folder.SetDir("test")
 ```
 
-### 5.4 设置生成后缀
+### 6.4 设置生成后缀
 ```go
 folder.SetMakeSuffix(".make")
 ```
 
 可以通过[生成后缀]()来区分生成目录和自定义目录。
 
-### 5.5 设置生成前缀
+### 6.5 设置生成前缀
 
 ```go
 folder.SetMakePrefix("make-")
@@ -209,59 +209,59 @@ folder.SetMakePrefix("make-")
 
 可以通过[生成前缀]()来区分生成目录和自定义目录。
 
-### 添加文件
+### 6.6 添加文件
 
 ```go
 folder.AddFile(file1, file2, ...)
 ```
 
-## 生成代码块
+## 7 生成代码块
 
 生成代码块是以代码块为去重单位，当同位置有不带后缀和前缀的同名文件里存在同名的代码块时，便不会执行代码块的生成操作。
 
-### 新文件
+### 7.1 新文件
 
 ```go 
 s := snippet.NewSnippet(snippet.SuffixGo)
 ```
 
-### 设置文件名
+### 7.2 设置文件名
 
 ```go
 s.SetName("main")
 ```
 
-### 设置文件路径
+### 7.3 设置文件路径
 
 ```go
 s.SetDir("main")
 ```
 
-### 设置生成后缀
+### 7.4 设置生成后缀
 ```go
 s.SetMakeSuffix(".make")
 ```
 
 可以通过[生成后缀]()来区分生成文件和自定义文件。
 
-### 设置生成前缀
+### 7.5 设置生成前缀
 
 ```go
 s.SetMakePrefix("make-")
 ```
 
-### 设置命名空间
+### 7.6 设置命名空间
 ```go
 s.SetNamespace("main")
 ```
 
-### 添加标签
+### 7.7 添加标签
 
 ```go
 s.AddTag("build dev")
 ```
 
-### 设置渲染函数
+### 7.8 设置渲染函数
 
 ```go
 s.SetRender(goalng.Render)
@@ -269,14 +269,14 @@ s.SetRender(goalng.Render)
 
 使用[预定义渲染函数]()。
 
-### 设置格式化函数
+### 7.9 设置格式化函数
 
 ```go
 s.SetFormatter(golang.Formatter)
 ```
 使用[预定义格式化函数]()。
 
-### 添加常量
+### 7.10 添加常量
 
 ```go
 const1 := golang.NewConstant("Name","foo")
@@ -286,7 +286,7 @@ s.AddConstant(const1, const2, ...)
 
 使用 [golang.NewConstant]() 快速创建常量代码块。
 
-### 添加代码块
+### 7.11 添加代码块
 
 ```go
 block1 := golang.NewFunc("main", mainTpl, renderData)
@@ -298,7 +298,7 @@ s.AddBlock(block1, block2)
 
 查看[代码块定义]()详情。
 
-### 文件合并
+### 7.12 文件合并
 
 ```go
 s.Merge(s2, s3, ...)
@@ -306,7 +306,7 @@ s.Merge(s2, s3, ...)
 
 文件合并以文件路径为索引。通过合并可能可以在不同的地方定义代码块，最终合并生成一个文件。
 
-### 提交文件
+### 7.13 提交文件
 
 > 注：在代码块文件定义完后必须执行此操作
 
@@ -314,9 +314,9 @@ s.Merge(s2, s3, ...)
 s.Commit()
 ```
 
-## 代码块定义
+## 8. 代码块定义
 
-### 新代码块
+### 8.1 新代码块
 
 ```go
 block := snippet.NewBlock(filter, template, data)
@@ -335,14 +335,14 @@ golang.NewStructFunc(structName, funcName, code string, data interface{})
 
 
 
-### 定义依赖包
+### 8.2 定义依赖包
 
 ```
 packageFmt := snippet.NewPackage("fmt", "fmt")
 packageMySql := snippet.NewPackage("_", "github.com/go-sql-driver/mysql")
 ```
 
-### 使用依赖包
+### 8.3 使用依赖包
 
 ```
 block.UsePackage(packageFmt, packageMySql, ...)
@@ -351,8 +351,48 @@ block.UsePackage(packageFmt, packageMySql, ...)
 依赖包与代码块绑定，当代码块生成时（没有与自定义代码块重复），才会添加至依赖包列表。
 
 
-## 模板渲染
+## 9. 模板渲染
 
-## 去重机制
+`File.SetContent()` 方法和  `Block.SetCode()` 方法均支持模板渲染，渲染引擎采用了 [pongo2](https://github.com/flosch/pongo2)。
 
-## 完整示例
+### 9.1 渲染数据
+
+要求传入数据类型是 `struct`。
+
+### 9.2 If 语句
+
+```
+{% if Tag == 1 %}
+...
+{% elif Tag == 2 %}
+...
+{% endif %}
+```
+
+### 9.3 For 循环
+
+```
+{% for route in Routes %}
+   {{forloop.Counter}} {{ route.Name }}
+{% endfor %}
+```
+
+### 9.4 模板函数
+
+Pongo2 支持模板函数，在此项目中暂时没有支持，希望所有的渲染数据提前预处理。
+
+### 9.5 空格和换行
+
+pongo2 渲染后的数据对于首空格和换行的控制有点混乱，此项目在使用支持模板渲染的方法时，传入的数据不为 `nil`，需要使用 `<\n>` 和 `<\s>` 标签来控制生成内容的换行和空格数量。如果是代码的话，可以使用代码格式化函数来完成，如 [golang.Formatter]()。
+
+## 10. 去重机制
+
+去重的核心规则是：生成文件或目录的同位置是否有**不包含生成前缀后生成后缀的同名文件或目录**。如生成文件时（File）如果生成后缀是 `.make`，文件 'example/test.md' 已存在，则 `example.make.md` 便不会再生成。
+
+生成代码块文件(Snippet) 时会进入同名文件内部，检查是否有同名代码块。如 `example/main.go` 中已存在 `main` 函数，则生成的 `example.make.go` 文件中，则不会出现 `main` 函数及其依赖的包。如果一个生成代码块文件，所有的代码块均呗自定义，则已生成的文件会被清除。
+
+## 11. 完整示例
+
+## 12. 问题反馈
+
+如果你对本项目感兴趣或有什么问题，欢迎联系：
