@@ -40,6 +40,6 @@ func (p *Folders) render(project *Project) {
 		v.initFiles()
 		v.files.render(project, distPath)
 
-		project.writer.AddMakeRenderDir(distPath, customPath, len(v.files.All()))
+		project.writer.addMakeRenderDir(distPath, customPath, len(v.files.All()))
 	}
 }

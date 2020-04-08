@@ -1,10 +1,9 @@
-package writer
+package snippet
 
 import (
 	"crypto/md5"
 	"encoding/hex"
 	"fmt"
-	"github.com/koyeo/snippet"
 	"github.com/koyeo/snippet/logger"
 	"github.com/koyeo/snippet/storage"
 	"os"
@@ -79,7 +78,7 @@ func (p *Writer) addLocalRenderDir(dirPath string) {
 	}
 }
 
-func (p *Writer) AddMakeRenderFile(distPath, makePath, customPath, makeContent string, makeDiff bool) {
+func (p *Writer) addMakeRenderFile(distPath, makePath, customPath, makeContent string, makeDiff bool) {
 	p.initRenderFile(makePath)
 	p.renderFiles[makePath].MakePath = distPath
 	p.renderFiles[makePath].CustomPath = customPath
@@ -87,13 +86,13 @@ func (p *Writer) AddMakeRenderFile(distPath, makePath, customPath, makeContent s
 	p.renderFiles[makePath].CheckDiff = makeDiff
 }
 
-func (p *Writer) AddMakeRenderDir(distPath, customPath string, makeFiles int) {
+func (p *Writer) addMakeRenderDir(distPath, customPath string, makeFiles int) {
 	p.initRenderDir(distPath)
 	p.renderDirs[distPath].CustomPath = customPath
 	p.renderDirs[distPath].MakeFiles = makeFiles
 }
 
-func (p *Writer) LoadLocalRenderFiles(debug bool, path string, ignore, prefix, suffix []string) (err error) {
+func (p *Writer) loadLocalRenderFiles(debug bool, path string, ignore, prefix, suffix []string) (err error) {
 
 	if len(prefix) == 0 && len(suffix) == 0 {
 		return
@@ -119,7 +118,7 @@ func (p *Writer) LoadLocalRenderFiles(debug bool, path string, ignore, prefix, s
 	return
 }
 
-func (p *Writer) LoadLocalRenderDirs(debug bool, path string, ignore, prefix, suffix []string) (err error) {
+func (p *Writer) loadLocalRenderDirs(debug bool, path string, ignore, prefix, suffix []string) (err error) {
 
 	if len(prefix) == 0 && len(suffix) == 0 {
 		return
@@ -141,7 +140,7 @@ func (p *Writer) LoadLocalRenderDirs(debug bool, path string, ignore, prefix, su
 	return
 }
 
-func (p *Writer) CompareSnippet(snippet *snippet.Snippet, customPath string) {
+func (p *Writer) compareSnippet(snippet *Snippet, customPath string) {
 
 	var err error
 	var compareContent string
@@ -169,7 +168,7 @@ func (p *Writer) CompareSnippet(snippet *snippet.Snippet, customPath string) {
 	}
 }
 
-func (p *Writer) Clean() {
+func (p *Writer) clean() {
 
 	for filePath, renderFile := range p.renderFiles {
 		if renderFile.MakeContent == "" {
@@ -206,7 +205,7 @@ func (p *Writer) matchSegment(rule string, content string) (match bool) {
 	return
 }
 
-func (p *Writer) Render() {
+func (p *Writer) render() {
 
 	for makePath, renderFile := range p.renderFiles {
 		render := true

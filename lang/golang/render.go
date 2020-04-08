@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/koyeo/snippet"
 	"github.com/koyeo/snippet/logger"
-	"github.com/koyeo/snippet/writer"
 	"go/format"
 	"strings"
 )
@@ -75,7 +74,7 @@ func Formatter(content string) (output string, err error) {
 }
 
 func Render(item *snippet.Snippet) (string, error) {
-	return writer.Render(fileTpl, prepareRenderGolangData(item))
+	return snippet.Render(fileTpl, prepareRenderGolangData(item))
 }
 
 var fileTpl = `

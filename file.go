@@ -2,7 +2,6 @@ package snippet
 
 import (
 	"github.com/koyeo/snippet/logger"
-	"github.com/koyeo/snippet/writer"
 	"path/filepath"
 )
 
@@ -44,9 +43,9 @@ func (p *File) SetMakePrefix(makePrefix string) {
 }
 
 func (p *File) SetContent(content string, data interface{}) {
-	content, err := writer.Render(content, data)
+	content, err := Render(content, data)
 	if err != nil {
-		logger.Fatal("Render content error: ", err)
+		logger.Fatal("render content error: ", err)
 	}
 	p.content = content
 	return

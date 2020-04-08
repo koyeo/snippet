@@ -48,21 +48,21 @@ func (p *Snippets) render(project *Project) {
 		distPath := filepath.Join(project.root, v.getDir())
 		makePath := filepath.Join(distPath, distFile)
 		customPath := filepath.Join(distPath, customFile)
-		project.writer.CompareSnippet(v, customPath)
+		project.writer.compareSnippet(v, customPath)
 		if v.ignore {
 			continue
 		}
 
 		content, err := v.render(v)
 		if err != nil {
-			logger.Fatal("Render error: ", err)
+			logger.Fatal("render error: ", err)
 		}
 		if content != "" {
 			content, err = v.formatter(content)
 			if err != nil {
 				logger.Fatal("Format error: ", err)
 			}
-			project.writer.AddMakeRenderFile(distPath, makePath, customPath, content, true)
+			project.writer.addMakeRenderFile(distPath, makePath, customPath, content, true)
 		}
 	}
 }

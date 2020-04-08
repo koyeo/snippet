@@ -48,13 +48,13 @@ func MakeFileSuccess(path string) {
 func CleanFileSuccess(path string) {
 	wd, _ := os.Getwd()
 	path = strings.TrimPrefix(path, wd+"/")
-	log.Println(chalk.Cyan.Color("Clean file:"), chalk.Cyan.Color(chalk.Bold.TextStyle(path)))
+	log.Println(chalk.Cyan.Color("clean file:"), chalk.Cyan.Color(chalk.Bold.TextStyle(path)))
 }
 
 func CleanDirSuccess(path string) {
 	wd, _ := os.Getwd()
 	path = strings.TrimPrefix(path, wd+"/")
-	log.Println(chalk.Cyan.Color("Clean dir:"), chalk.Cyan.Color(chalk.Bold.TextStyle(path)))
+	log.Println(chalk.Cyan.Color("clean dir:"), chalk.Cyan.Color(chalk.Bold.TextStyle(path)))
 }
 
 func TemplateError(msg string, err error) {

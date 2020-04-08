@@ -2,7 +2,6 @@ package snippet
 
 import (
 	"github.com/koyeo/snippet/logger"
-	"github.com/koyeo/snippet/writer"
 )
 
 func NewBlock(filter Filter, code string, data interface{}) *Block {
@@ -66,9 +65,9 @@ func (p *Block) Filter() (filter Filter) {
 
 func (p *Block) SetCode(code string, data interface{}) {
 
-	code, err := writer.Render(code, data)
+	code, err := Render(code, data)
 	if err != nil {
-		logger.Fatal("Render content error: ", err)
+		logger.Fatal("render content error: ", err)
 	}
 	p.code = code
 	return
