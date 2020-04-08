@@ -437,7 +437,9 @@ Pongo2 支持模板函数，在此项目中暂时没有支持，希望所有的�
 
 ### 9.5 空格和换行
 
-pongo2 渲染后的数据对于首空格和换行的控制有点混乱，此项目在使用支持模板渲染的方法时，传入的数据不为 `nil`，需要使用 `<\n>` 和 `<\s>` 标签来控制生成内容的换行和空格数量。如果是代码的话，可以使用代码格式化函数来完成，如 [golang.Formatter](https://github.com/koyeo/snippet/blob/master/golang/render.go)。
+pongo2 渲染后的数据对于首空格和换行的控制有点混乱，此项目在使用支持模板渲染的方法时，传入的数据不为 `nil`，需要使用 `<\n>` 和 `<\s>` 标签来控制生成内容的换行和空格数量。
+
+如果是代码的话，可以使用代码格式化函数来完成，如 [golang.Formatter](https://github.com/koyeo/snippet/blob/master/golang/render.go)。
 
 ## 10. 去重机制
 
