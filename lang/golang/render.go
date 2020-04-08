@@ -2,8 +2,10 @@ package golang
 
 import (
 	"fmt"
+	"github.com/koyeo/snippet"
+	"github.com/koyeo/snippet/logger"
+	"github.com/koyeo/snippet/writer"
 	"go/format"
-	"snippet"
 	"strings"
 )
 
@@ -31,14 +33,14 @@ func prepareRenderGolangData(snippet *snippet.Snippet) *renderGolangData {
 	data.Tags = snippet.GetTags()
 	data.Namespace = snippet.GetNamespace()
 
-	for _, v := range snippet.GetPackages() {
+	for _, v := range snippet.Packages() {
 		data.Packages = append(data.Packages, &renderGolangPackage{
 			Name: v.GetName(),
 			Path: v.GetPath(),
 		})
 	}
 
-	for _, v := range snippet.GetConstants() {
+	for _, v := range snippet.Constants() {
 		if !v.Exist() {
 			data.Constants = append(data.Constants, &renderGolangBlock{
 				Code: v.Code(),
@@ -46,7 +48,7 @@ func prepareRenderGolangData(snippet *snippet.Snippet) *renderGolangData {
 		}
 	}
 
-	for _, v := range snippet.GetBlocks() {
+	for _, v := range snippet.Blocks() {
 		if !v.Exist() {
 			data.Blocks = append(data.Blocks, &renderGolangBlock{
 				Code: v.Code(),
@@ -64,7 +66,7 @@ func Formatter(content string) (output string, err error) {
 		for k, v := range lines {
 			fmt.Printf("%d: %s\n", k+1, v)
 		}
-		snippet.Fatal(fmt.Sprintf("Foramt file %s error:", content), err)
+		logger.Fatal(fmt.Sprintf("Foramt file %s error:", content), err)
 		return
 	}
 	output = string(bytes)
@@ -73,7 +75,7 @@ func Formatter(content string) (output string, err error) {
 }
 
 func Render(item *snippet.Snippet) (string, error) {
-	return snippet.Render(fileTpl, prepareRenderGolangData(item))
+	return writer.Render(fileTpl, prepareRenderGolangData(item))
 }
 
 var fileTpl = `

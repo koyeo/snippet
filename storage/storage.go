@@ -1,7 +1,8 @@
-package snippet
+package storage
 
 import (
 	"fmt"
+	"github.com/koyeo/snippet/logger"
 	"io/ioutil"
 	"os"
 	"os/exec"
@@ -63,7 +64,7 @@ func ReadFiles(debug bool, path string, ignore []string, prefix []string, suffix
 		for _, v := range ignore {
 			ok, err = filepath.Match(v, subPath)
 			if err != nil {
-				Fatal("Match ignore path error: ", err)
+				logger.Fatal("Match ignore path error: ", err)
 			}
 			if ok {
 				break
@@ -71,7 +72,7 @@ func ReadFiles(debug bool, path string, ignore []string, prefix []string, suffix
 		}
 		if ok {
 			if debug {
-				IgnoreReadPath("Read files ignore path:", subPath)
+				logger.IgnoreReadPath("Read files ignore path:", subPath)
 			}
 			continue
 		}
@@ -109,7 +110,7 @@ func ReadDirs(debug bool, path string, ignore []string, prefix []string, suffix 
 		for _, v := range ignore {
 			ok, err = filepath.Match(v, subPath)
 			if err != nil {
-				Fatal("Match ignore path error: ", err)
+				logger.Fatal("Match ignore path error: ", err)
 			}
 			if ok {
 				break
@@ -117,7 +118,7 @@ func ReadDirs(debug bool, path string, ignore []string, prefix []string, suffix 
 		}
 		if ok {
 			if debug {
-				IgnoreReadPath("Read dirs ignore path:", subPath)
+				logger.IgnoreReadPath("Read dirs ignore path:", subPath)
 			}
 			continue
 		}
@@ -164,7 +165,7 @@ func MakeDir(path string) {
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		cmd := exec.Command("bash", "-c", fmt.Sprintf("mkdir -p %s", path))
 		_ = cmd.Run()
-		MakeDirSuccess(path)
+		logger.MakeDirSuccess(path)
 	}
 
 }
@@ -173,7 +174,7 @@ func PathExist(path string) bool {
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		return false
 	} else if err != nil {
-		Fatal("Check file exists:", err)
+		logger.Fatal("Check file exists:", err)
 	}
 	return true
 }

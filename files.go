@@ -1,6 +1,7 @@
 package snippet
 
 import (
+	"github.com/koyeo/snippet/storage"
 	"path/filepath"
 )
 
@@ -47,8 +48,8 @@ func (p *Files) render(project *Project, root string) {
 		makePath := filepath.Join(distPath, distFile)
 		customPath := filepath.Join(distPath, customFile)
 
-		if !PathExist(customPath) {
-			project.writer.addMakeRenderFile(distPath, makePath, customPath, v.content, true)
+		if !storage.PathExist(customPath) {
+			project.writer.AddMakeRenderFile(distPath, makePath, customPath, v.content, true)
 		}
 	}
 }

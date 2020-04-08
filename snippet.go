@@ -30,6 +30,18 @@ type Snippet struct {
 	ignore       bool
 }
 
+func (p *Snippet) SetIgnore(ignore bool) {
+	p.ignore = ignore
+}
+
+func (p *Snippet) Constants() []*Block {
+	return p.constants
+}
+
+func (p *Snippet) Blocks() []*Block {
+	return p.blocks
+}
+
 func (p *Snippet) SetMakeSuffix(suffix string) {
 	p.makeSuffix = suffix
 }
@@ -47,10 +59,10 @@ func (p *Snippet) initCache() {
 func (p *Snippet) Commit() {
 
 	filePath := path.Join(p.path, p.name+p.suffix)
-	p.getFileCache().Add(filePath)
+	p.Cache().Add(filePath)
 
 	for _, v := range p.tmpConstants {
-		if v.filter != nil && p.getFileCache().Match(filePath, v.filter.GetRule()) {
+		if v.filter != nil && p.Cache().Match(filePath, v.filter.GetRule()) {
 			continue
 		}
 		p.constants = append(p.constants, v)
@@ -58,7 +70,7 @@ func (p *Snippet) Commit() {
 	p.tmpConstants = make([]*Block, 0)
 
 	for _, v := range p.tmpBlocks {
-		if v.filter != nil && p.getFileCache().Match(filePath, v.filter.GetRule()) {
+		if v.filter != nil && p.Cache().Match(filePath, v.filter.GetRule()) {
 			continue
 		}
 		p.blocks = append(p.blocks, v)
@@ -66,7 +78,7 @@ func (p *Snippet) Commit() {
 	p.tmpBlocks = make([]*Block, 0)
 }
 
-func (p *Snippet) getFileCache() *Cache {
+func (p *Snippet) Cache() *Cache {
 	if p.cache == nil {
 		p.cache = new(Cache)
 	}
@@ -87,13 +99,6 @@ func (p *Snippet) AddConstant(constants ...*Block) {
 	}
 }
 
-func (p *Snippet) GetConstants() (constants []*Block) {
-	for _, v := range p.constants {
-		constants = append(constants, v)
-	}
-	return
-}
-
 func (p *Snippet) SetTodo() {
 	p.todo = true
 }
@@ -102,7 +107,7 @@ func (p *Snippet) SetName(name string) {
 	p.name = name
 }
 
-func (p *Snippet) getName() string {
+func (p *Snippet) Name() string {
 	return p.name
 }
 
@@ -110,7 +115,7 @@ func (p *Snippet) SetSuffix(suffix string) {
 	p.suffix = suffix
 }
 
-func (p *Snippet) getSuffix() string {
+func (p *Snippet) Suffix() string {
 	return p.suffix
 }
 
@@ -126,8 +131,8 @@ func (p *Snippet) getDir() string {
 
 func (p *Snippet) Merge(snippets ...*Snippet) {
 	for _, v := range snippets {
-		p.AddConstant(v.GetConstants()...)
-		p.AddBlock(v.GetBlocks()...)
+		p.AddConstant(v.Constants()...)
+		p.AddBlock(v.Blocks()...)
 		p.Commit()
 	}
 }
@@ -140,7 +145,7 @@ func (p *Snippet) GetNamespace() string {
 	return p.namespace
 }
 
-func (p *Snippet) GetPackages() (packages []*Package) {
+func (p *Snippet) Packages() (packages []*Package) {
 	for _, v := range p.blocks {
 		if v.exist {
 			continue
@@ -154,13 +159,6 @@ func (p *Snippet) AddBlock(blocks ...*Block) {
 	for _, v := range blocks {
 		p.tmpBlocks = append(p.tmpBlocks, v)
 	}
-}
-
-func (p *Snippet) GetBlocks() (snippetBlocks []*Block) {
-	for _, v := range p.blocks {
-		snippetBlocks = append(snippetBlocks, v)
-	}
-	return
 }
 
 func (p *Snippet) SetRender(render RenderFunc) {

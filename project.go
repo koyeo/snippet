@@ -1,5 +1,10 @@
 package snippet
 
+import (
+	"github.com/koyeo/snippet/logger"
+	writer "github.com/koyeo/snippet/writer"
+)
+
 func NewProject() *Project {
 	return &Project{}
 }
@@ -14,7 +19,7 @@ type Project struct {
 	files          *Files
 	folders        *Folders
 	snippets       *Snippets
-	writer         *Writer
+	writer         *writer.Writer
 	debug          bool
 }
 
@@ -70,7 +75,7 @@ func (p *Project) initMakeDirSuffix() {
 
 func (p *Project) initWriter() {
 	if p.writer == nil {
-		p.writer = NewWriter()
+		p.writer = writer.NewWriter()
 	}
 }
 
@@ -157,9 +162,9 @@ func (p *Project) loadLocalFiles() {
 	p.initMakeFilePrefix()
 	p.initMakeFileSuffix()
 
-	err := p.writer.loadLocalRenderFiles(p.debug, p.root, p.ignore, p.makeFilePrefix.All(), p.makeFileSuffix.All())
+	err := p.writer.LoadLocalRenderFiles(p.debug, p.root, p.ignore, p.makeFilePrefix.All(), p.makeFileSuffix.All())
 	if err != nil {
-		Fatal("Load local render files error: ", err)
+		logger.Fatal("Load local render files error: ", err)
 	}
 }
 
@@ -168,9 +173,9 @@ func (p *Project) loadLocalDirs() {
 	p.initMakeDirPrefix()
 	p.initMakeDirSuffix()
 
-	err := p.writer.loadLocalRenderDirs(p.debug, p.root, p.ignore, p.makeDirPrefix.All(), p.makeDirSuffix.All())
+	err := p.writer.LoadLocalRenderDirs(p.debug, p.root, p.ignore, p.makeDirPrefix.All(), p.makeDirSuffix.All())
 	if err != nil {
-		Fatal("Load local render dirs error: ", err)
+		logger.Fatal("Load local render dirs error: ", err)
 	}
 }
 
@@ -190,10 +195,10 @@ func (p *Project) renderFolders() {
 }
 
 func (p *Project) render() {
-	p.writer.render()
+	p.writer.Render()
 }
 
 func (p *Project) clean() {
-	p.writer.clean()
-	MakeDone()
+	p.writer.Clean()
+	logger.MakeDone()
 }

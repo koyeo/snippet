@@ -1,6 +1,8 @@
 package snippet
 
 import (
+	"github.com/koyeo/snippet/logger"
+	"github.com/koyeo/snippet/storage"
 	"path/filepath"
 )
 
@@ -20,7 +22,7 @@ func (p *Snippets) Add(snippets ...*Snippet) {
 	}
 
 	for _, v := range snippets {
-		ident := Join(v.getDir(), v.getName())
+		ident := storage.Join(v.getDir(), v.Name())
 		if old, ok := p.snippetMap[ident]; !ok {
 			p.snippetList = append(p.snippetList, v)
 			p.snippetMap[ident] = v
@@ -46,21 +48,21 @@ func (p *Snippets) render(project *Project) {
 		distPath := filepath.Join(project.root, v.getDir())
 		makePath := filepath.Join(distPath, distFile)
 		customPath := filepath.Join(distPath, customFile)
-		project.writer.compareSnippet(v, customPath)
+		project.writer.CompareSnippet(v, customPath)
 		if v.ignore {
 			continue
 		}
 
 		content, err := v.render(v)
 		if err != nil {
-			Fatal("Render error: ", err)
+			logger.Fatal("Render error: ", err)
 		}
 		if content != "" {
 			content, err = v.formatter(content)
 			if err != nil {
-				Fatal("Format error: ", err)
+				logger.Fatal("Format error: ", err)
 			}
-			project.writer.addMakeRenderFile(distPath, makePath, customPath, content, true)
+			project.writer.AddMakeRenderFile(distPath, makePath, customPath, content, true)
 		}
 	}
 }

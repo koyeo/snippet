@@ -2,7 +2,7 @@ package golang
 
 import (
 	"fmt"
-	"snippet"
+	"github.com/koyeo/snippet"
 )
 
 func NewConstant(name, value string) *snippet.Block {

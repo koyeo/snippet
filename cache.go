@@ -1,6 +1,7 @@
 package snippet
 
 import (
+	"github.com/koyeo/snippet/storage"
 	"regexp"
 )
 
@@ -22,7 +23,7 @@ func (p *Cache) Add(path string) {
 		return
 	}
 
-	p.fileMap[path], _ = ReadFile(path)
+	p.fileMap[path], _ = storage.ReadFile(path)
 
 	return
 }

@@ -1,5 +1,10 @@
 package snippet
 
+import (
+	"github.com/koyeo/snippet/logger"
+	"github.com/koyeo/snippet/writer"
+)
+
 func NewBlock(filter Filter, code string, data interface{}) *Block {
 	b := &Block{
 		filter: filter,
@@ -25,6 +30,10 @@ type Block struct {
 	code     string
 	packages *Packages
 	exist    bool
+}
+
+func (p *Block) SetExist(exist bool) {
+	p.exist = exist
 }
 
 func (p *Block) Exist() bool {
@@ -57,9 +66,9 @@ func (p *Block) Filter() (filter Filter) {
 
 func (p *Block) SetCode(code string, data interface{}) {
 
-	code, err := Render(code, data)
+	code, err := writer.Render(code, data)
 	if err != nil {
-		Fatal("Render content error: ", err)
+		logger.Fatal("Render content error: ", err)
 	}
 	p.code = code
 	return

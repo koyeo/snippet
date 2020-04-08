@@ -1,9 +1,12 @@
-package snippet
+package writer
 
 import (
 	"crypto/md5"
 	"encoding/hex"
 	"fmt"
+	"github.com/koyeo/snippet"
+	"github.com/koyeo/snippet/logger"
+	"github.com/koyeo/snippet/storage"
 	"os"
 	"regexp"
 )
@@ -76,7 +79,7 @@ func (p *Writer) addLocalRenderDir(dirPath string) {
 	}
 }
 
-func (p *Writer) addMakeRenderFile(distPath, makePath, customPath, makeContent string, makeDiff bool) {
+func (p *Writer) AddMakeRenderFile(distPath, makePath, customPath, makeContent string, makeDiff bool) {
 	p.initRenderFile(makePath)
 	p.renderFiles[makePath].MakePath = distPath
 	p.renderFiles[makePath].CustomPath = customPath
@@ -84,29 +87,29 @@ func (p *Writer) addMakeRenderFile(distPath, makePath, customPath, makeContent s
 	p.renderFiles[makePath].CheckDiff = makeDiff
 }
 
-func (p *Writer) addMakeRenderDir(distPath, customPath string, makeFiles int) {
+func (p *Writer) AddMakeRenderDir(distPath, customPath string, makeFiles int) {
 	p.initRenderDir(distPath)
 	p.renderDirs[distPath].CustomPath = customPath
 	p.renderDirs[distPath].MakeFiles = makeFiles
 }
 
-func (p *Writer) loadLocalRenderFiles(debug bool, path string, ignore, prefix, suffix []string) (err error) {
+func (p *Writer) LoadLocalRenderFiles(debug bool, path string, ignore, prefix, suffix []string) (err error) {
 
 	if len(prefix) == 0 && len(suffix) == 0 {
 		return
 	}
 
-	if !PathExist(path) {
+	if !storage.PathExist(path) {
 		return
 	}
 
-	files, err := ReadFiles(debug, path, ignore, prefix, suffix)
+	files, err := storage.ReadFiles(debug, path, ignore, prefix, suffix)
 	if err != nil {
 		return
 	}
 	for _, file := range files {
 		var content string
-		content, err = ReadFile(file)
+		content, err = storage.ReadFile(file)
 		if err != nil {
 			return
 		}
@@ -116,17 +119,17 @@ func (p *Writer) loadLocalRenderFiles(debug bool, path string, ignore, prefix, s
 	return
 }
 
-func (p *Writer) loadLocalRenderDirs(debug bool, path string, ignore, prefix, suffix []string) (err error) {
+func (p *Writer) LoadLocalRenderDirs(debug bool, path string, ignore, prefix, suffix []string) (err error) {
 
 	if len(prefix) == 0 && len(suffix) == 0 {
 		return
 	}
 
-	if !PathExist(path) {
+	if !storage.PathExist(path) {
 		return
 	}
 
-	dirs, err := ReadDirs(debug, path, ignore, prefix, suffix)
+	dirs, err := storage.ReadDirs(debug, path, ignore, prefix, suffix)
 	if err != nil {
 		return
 	}
@@ -138,55 +141,55 @@ func (p *Writer) loadLocalRenderDirs(debug bool, path string, ignore, prefix, su
 	return
 }
 
-func (p *Writer) compareSnippet(snippet *Snippet, customPath string) {
+func (p *Writer) CompareSnippet(snippet *snippet.Snippet, customPath string) {
 
 	var err error
 	var compareContent string
 
-	if PathExist(customPath) {
-		compareContent, err = ReadFile(customPath)
+	if storage.PathExist(customPath) {
+		compareContent, err = storage.ReadFile(customPath)
 		if err != nil {
-			Fatal(fmt.Sprintf("Read %s error:", customPath), err)
+			logger.Fatal(fmt.Sprintf("Read %s error:", customPath), err)
 		}
 	}
 
-	items := append(snippet.constants, snippet.blocks...)
+	items := append(snippet.Constants(), snippet.Blocks()...)
 	i := 0
 	for _, v := range items {
-		if v.filter != nil {
-			if p.matchSegment(v.filter.GetRule(), compareContent) {
-				v.exist = true
+		if v.Filter() != nil {
+			if p.matchSegment(v.Filter().GetRule(), compareContent) {
+				v.SetExist(true)
 				i++
 				continue
 			}
 		}
 	}
 	if i == len(items) {
-		snippet.ignore = true
+		snippet.SetIgnore(true)
 	}
 }
 
-func (p *Writer) clean() {
+func (p *Writer) Clean() {
 
 	for filePath, renderFile := range p.renderFiles {
 		if renderFile.MakeContent == "" {
-			err := Remove(filePath)
+			err := storage.Remove(filePath)
 			if err != nil {
-				Error(fmt.Sprintf("Remove file error:"), err)
+				logger.Error(fmt.Sprintf("Remove file error:"), err)
 				return
 			}
-			CleanFileSuccess(filePath)
+			logger.CleanFileSuccess(filePath)
 		}
 	}
 
 	for dirPath, renderDir := range p.renderDirs {
-		if renderDir.MakeFiles == 0 || PathExist(renderDir.CustomPath) {
-			err := Remove(dirPath)
+		if renderDir.MakeFiles == 0 || storage.PathExist(renderDir.CustomPath) {
+			err := storage.Remove(dirPath)
 			if err != nil {
-				Error(fmt.Sprintf("Remove Dir error:"), err)
+				logger.Error(fmt.Sprintf("Remove Dir error:"), err)
 				return
 			}
-			CleanDirSuccess(dirPath)
+			logger.CleanDirSuccess(dirPath)
 		}
 	}
 }
@@ -195,7 +198,7 @@ func (p *Writer) matchSegment(rule string, content string) (match bool) {
 
 	reg, err := regexp.Compile(rule)
 	if err != nil {
-		Fatal(fmt.Sprintf(`Compile regexp %s error:`, rule), err)
+		logger.Fatal(fmt.Sprintf(`Compile regexp %s error:`, rule), err)
 	}
 
 	match = reg.MatchString(content)
@@ -203,7 +206,7 @@ func (p *Writer) matchSegment(rule string, content string) (match bool) {
 	return
 }
 
-func (p *Writer) render() {
+func (p *Writer) Render() {
 
 	for makePath, renderFile := range p.renderFiles {
 		render := true
@@ -215,11 +218,11 @@ func (p *Writer) render() {
 		if renderFile.CheckDiff {
 
 			if renderFile.LocalContent == "" {
-				if PathExist(makePath) {
+				if storage.PathExist(makePath) {
 					var err error
-					renderFile.LocalContent, err = ReadFile(makePath)
+					renderFile.LocalContent, err = storage.ReadFile(makePath)
 					if err != nil {
-						Error("CheckDiff read file error: ", err)
+						logger.Error("CheckDiff read file error: ", err)
 						os.Exit(1)
 					}
 				}
@@ -242,16 +245,16 @@ func (p *Writer) render() {
 		if render && !renderFile.HasWrite {
 
 			if renderFile.MakePath != "" {
-				MakeDir(Abs(renderFile.MakePath))
+				storage.MakeDir(storage.Abs(renderFile.MakePath))
 			}
 
-			err := WriteFile(makePath, []byte(renderFile.MakeContent))
+			err := storage.WriteFile(makePath, []byte(renderFile.MakeContent))
 			if err != nil {
 				return
 			}
 
 			renderFile.HasWrite = true
-			MakeFileSuccess(makePath)
+			logger.MakeFileSuccess(makePath)
 		}
 	}
 }
