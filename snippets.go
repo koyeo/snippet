@@ -53,14 +53,20 @@ func (p *Snippets) render(project *Project) {
 			continue
 		}
 
+		if v.render == nil {
+			logger.Fatal("Not set render func")
+		}
+
 		content, err := v.render(project.ctx, v)
 		if err != nil {
 			logger.Fatal("render error: ", err)
 		}
 		if content != "" {
-			content, err = v.formatter(content)
-			if err != nil {
-				logger.Fatal("Format error: ", err)
+			if v.formatter != nil {
+				content, err = v.formatter(content)
+				if err != nil {
+					logger.Fatal("Format error: ", err)
+				}
 			}
 			project.writer.addMakeRenderFile(distPath, makePath, customPath, content, true)
 		}
