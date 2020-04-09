@@ -8,7 +8,7 @@ func NewBlock(filter Filter, code string, data interface{}) *Block {
 	b := &Block{
 		filter: filter,
 	}
-	b.SetCode(nil, code, data)
+	b.SetCode(code, data)
 	return b
 }
 
@@ -20,7 +20,7 @@ func NewDocument(document string) *Block {
 	b := &Block{
 		filter: nil,
 	}
-	b.SetCode(nil, document, nil)
+	b.SetCode(document, nil)
 	return b
 }
 
