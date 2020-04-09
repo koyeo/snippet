@@ -1,8 +1,6 @@
 package snippet
 
 import (
-	"github.com/flosch/pongo2"
-	"github.com/koyeo/snippet/logger"
 	"path/filepath"
 )
 
@@ -17,6 +15,7 @@ type File struct {
 	makePrefix string
 	makeSuffix string
 	content    string
+	data       interface{}
 }
 
 func (p *File) fullPath() string {
@@ -43,11 +42,6 @@ func (p *File) SetMakePrefix(makePrefix string) {
 	p.makePrefix = makePrefix
 }
 
-func (p *File) SetContent(ctx pongo2.Context, content string, data interface{}) {
-	content, err := Render(ctx, content, data)
-	if err != nil {
-		logger.Fatal("render content error: ", err)
-	}
-	p.content = content
-	return
+func (p *File) SetContent(content string, data interface{}) {
+	p.content, p.data = content, data
 }

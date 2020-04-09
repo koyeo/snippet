@@ -1,6 +1,7 @@
 package snippet
 
 import (
+	"github.com/flosch/pongo2"
 	"github.com/koyeo/snippet/logger"
 )
 
@@ -20,6 +21,11 @@ type Project struct {
 	snippets       *Snippets
 	writer         *Writer
 	debug          bool
+	ctx            pongo2.Context
+}
+
+func (p *Project) SetCtx(ctx pongo2.Context) {
+	p.ctx = ctx
 }
 
 func (p *Project) SetDebug() {
