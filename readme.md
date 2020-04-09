@@ -454,7 +454,8 @@ package main
 
 import (
 	"github.com/koyeo/snippet"
-	"github.com/koyeo/snippet/golang"
+	"github.com/koyeo/snippet/lang/golang"
+	"github.com/koyeo/snippet/suffix"
 )
 
 type RenderData struct {
@@ -485,7 +486,7 @@ func main() {
 	mainBlock := golang.NewFunc("main", mainTpl, data)
 	mainBlock.UsePackage(packageFmt)
 
-	s := snippet.NewSnippet(snippet.SuffixGo)
+	s := snippet.NewSnippet(suffix.Go)
 	s.SetName("test")
 	s.SetNamespace("main")
 	s.SetDir("snippets")

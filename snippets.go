@@ -1,6 +1,7 @@
 package snippet
 
 import (
+	"errors"
 	"github.com/koyeo/snippet/logger"
 	"github.com/koyeo/snippet/storage"
 	"path/filepath"
@@ -54,18 +55,21 @@ func (p *Snippets) render(project *Project) {
 		}
 
 		if v.render == nil {
-			logger.Fatal("Not set render func")
+			logger.Fatal("Render snippet error: ", errors.New("not set render func"))
 		}
 
 		content, err := v.render(project.ctx, v)
 		if err != nil {
-			logger.Fatal("Render error: ", err)
+			logger.Fatal("Render snippet error: ", err)
 		}
+
+		content = FilterTags(content)
+
 		if content != "" {
 			if v.formatter != nil {
 				content, err = v.formatter(content)
 				if err != nil {
-					logger.Fatal("Format error: ", err)
+					logger.Fatal("Format snippet error: ", err)
 				}
 			}
 			project.writer.addMakeRenderFile(distPath, makePath, customPath, content, true)
