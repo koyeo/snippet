@@ -1,7 +1,6 @@
 package golang
 
 import (
-	"github.com/koyeo/snippet/helper"
 	"strings"
 )
 
@@ -34,7 +33,7 @@ var Types = func() []string {
 
 func KeyName(param string) string {
 	param = strings.TrimSpace(param)
-	if helper.InArray(append([]string{
+	if InArray(append([]string{
 		"break",
 		"case",
 		"chan",
@@ -65,4 +64,15 @@ func KeyName(param string) string {
 	}
 
 	return param
+}
+
+func InArray(items []string, item string) bool {
+
+	for _, v := range items {
+		if v == item {
+			return true
+		}
+	}
+
+	return false
 }
