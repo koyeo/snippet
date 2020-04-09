@@ -22,6 +22,11 @@ type Project struct {
 	writer         *Writer
 	debug          bool
 	ctx            pongo2.Context
+	hideMakeDone   bool
+}
+
+func (p *Project) HideMakeDone() {
+	p.hideMakeDone = true
 }
 
 func (p *Project) SetCtx(ctx pongo2.Context) {
@@ -205,5 +210,7 @@ func (p *Project) render() {
 
 func (p *Project) clean() {
 	p.writer.clean()
-	logger.MakeDone()
+	if !p.hideMakeDone {
+		logger.MakeDone()
+	}
 }

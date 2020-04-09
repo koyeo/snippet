@@ -59,7 +59,7 @@ func (p *Snippets) render(project *Project) {
 
 		content, err := v.render(project.ctx, v)
 		if err != nil {
-			logger.Fatal("render error: ", err)
+			logger.Fatal("Render error: ", err)
 		}
 		if content != "" {
 			if v.formatter != nil {
