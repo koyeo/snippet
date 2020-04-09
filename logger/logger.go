@@ -36,13 +36,13 @@ func IgnoreReadPath(msg, path string) {
 func MakeDirSuccess(path string) {
 	wd, _ := os.Getwd()
 	path = strings.TrimPrefix(path, wd+"/")
-	log.Println(chalk.Green.Color(chalk.Bold.TextStyle("Make dir:  ")), chalk.Green.Color(path))
+	log.Println(chalk.Green.Color(chalk.Bold.TextStyle("Make  dir: ")), chalk.Green.Color(path))
 }
 
 func MakeFileSuccess(path string) {
 	wd, _ := os.Getwd()
 	path = strings.TrimPrefix(path, wd+"/")
-	log.Println(chalk.Green.Color(chalk.Bold.TextStyle("Make file: ")), chalk.Green.Color(path))
+	log.Println(chalk.Green.Color(chalk.Bold.TextStyle("Make  file:")), chalk.Green.Color(path))
 }
 
 func CleanFileSuccess(path string) {
