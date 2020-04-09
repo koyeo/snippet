@@ -1,10 +1,11 @@
 package snippet
 
 import (
+	"github.com/flosch/pongo2"
 	"path"
 )
 
-type RenderFunc func(snippet *Snippet) (content string, err error)
+type RenderFunc func(ctx pongo2.Context, snippet *Snippet) (content string, err error)
 type FormatterFunc func(content string) (string, error)
 
 func NewSnippet(suffix string) *Snippet {

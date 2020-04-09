@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-func Render(content string, data interface{}) (res string, err error) {
+func Render(ctx pongo2.Context, content string, data interface{}) (res string, err error) {
 
 	content = fmt.Sprintf("{%s autoescape off %s}%s{%s endautoescape %s}", "%", "%", content, "%", "%")
 	tpl, err := pongo2.FromString(strings.TrimSpace(content))
@@ -16,7 +16,7 @@ func Render(content string, data interface{}) (res string, err error) {
 		return
 	}
 
-	res, err = tpl.Execute(makeContext(data))
+	res, err = tpl.Execute(makeContext(ctx, data))
 	if err != nil {
 		return
 	}
@@ -55,17 +55,31 @@ func filterTags(content string) string {
 	return strings.Join(results, "\n")
 }
 
-func makeContext(input interface{}) pongo2.Context {
+func wrapCtxFunc(ctx1 *pongo2.Context, ctx2 pongo2.Context) {
+	for k, v := range ctx2 {
+		(*ctx1)[k] = v
+	}
+}
 
-	ctx := make(pongo2.Context)
+func makeContext(ctx pongo2.Context, input interface{}) pongo2.Context {
+
+	if ctx == nil {
+
+	}
+
+	data := make(pongo2.Context)
 
 	if input != nil {
 		if v1, ok := input.(pongo2.Context); ok {
-			ctx = v1
+			data = v1
 		} else if structs.IsStruct(input) {
-			ctx = structs.Map(input)
+			data = structs.Map(input)
 		}
 	}
 
-	return ctx
+	if ctx != nil {
+		wrapCtxFunc(&data, ctx)
+	}
+
+	return data
 }

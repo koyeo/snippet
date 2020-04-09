@@ -25,6 +25,8 @@ type RenderDir struct {
 	MakeFiles  int
 }
 
+type TemplateFunc func(data interface{}) string
+
 func NewWriter() (c *Writer) {
 	c = new(Writer)
 	c.initRenderFiles()
@@ -34,6 +36,7 @@ func NewWriter() (c *Writer) {
 type Writer struct {
 	renderFiles map[string]*RenderFile
 	renderDirs  map[string]*RenderDir
+	funcs       map[string]TemplateFunc
 }
 
 func (p *Writer) initRenderFiles() {
@@ -45,6 +48,12 @@ func (p *Writer) initRenderFiles() {
 func (p *Writer) initRenderDirs() {
 	if p.renderDirs == nil {
 		p.renderDirs = make(map[string]*RenderDir)
+	}
+}
+
+func (p *Writer) initFuncs() {
+	if p.funcs == nil {
+		p.funcs = make(map[string]TemplateFunc)
 	}
 }
 
@@ -90,6 +99,11 @@ func (p *Writer) addMakeRenderDir(distPath, customPath string, makeFiles int) {
 	p.initRenderDir(distPath)
 	p.renderDirs[distPath].CustomPath = customPath
 	p.renderDirs[distPath].MakeFiles = makeFiles
+}
+
+func (p *Writer) addFunc(name string, _func TemplateFunc) {
+	p.initFuncs()
+	p.funcs[name] = _func
 }
 
 func (p *Writer) loadLocalRenderFiles(debug bool, path string, ignore, prefix, suffix []string) (err error) {

@@ -1,6 +1,7 @@
 package snippet
 
 import (
+	"github.com/flosch/pongo2"
 	"github.com/koyeo/snippet/logger"
 )
 
@@ -63,9 +64,9 @@ func (p *Block) Filter() (filter Filter) {
 	return p.filter
 }
 
-func (p *Block) SetCode(code string, data interface{}) {
+func (p *Block) SetCode(ctx pongo2.Context, code string, data interface{}) {
 
-	code, err := Render(code, data)
+	code, err := Render(ctx, code, data)
 	if err != nil {
 		logger.Fatal("render content error: ", err)
 	}
