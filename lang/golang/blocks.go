@@ -9,8 +9,8 @@ func NewConstant(name, value string) *snippet.Block {
 	return snippet.NewBlock(ConstFilter(name), fmt.Sprintf("%s=%s", name, value), nil)
 }
 
-func NewVar(name, value string) *snippet.Block {
-	return snippet.NewBlock(VarFilter(name), fmt.Sprintf("%s=%s", name, value), nil)
+func NewVar(name, value string, data interface{}) *snippet.Block {
+	return snippet.NewBlock(VarFilter(name), fmt.Sprintf("%s=%s", name, value), data)
 }
 
 func NewType(name, code string) *snippet.Block {
