@@ -63,7 +63,7 @@ func (p *Snippets) render(project *Project) {
 			logger.Fatal("Render snippet error: ", err)
 		}
 
-		content = FilterTags(content)
+		content = TrimSpace(content)
 
 		if content != "" {
 			if v.formatter != nil {

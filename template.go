@@ -24,7 +24,7 @@ func Render(ctx pongo2.Context, content string, data interface{}) (res string, e
 	return
 }
 
-func FilterTags(content string) string {
+func TrimSpace(content string) string {
 
 	newLineRegex := regexp.MustCompile(`<\s*\\n\s*>`)
 	spaceRegex := regexp.MustCompile(`<\s*\\s\s*>`)
