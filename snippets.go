@@ -2,6 +2,7 @@ package snippet
 
 import (
 	"errors"
+	"fmt"
 	"github.com/koyeo/snippet/logger"
 	"github.com/koyeo/snippet/storage"
 	"path/filepath"
@@ -47,6 +48,7 @@ func (p *Snippets) render(project *Project) {
 		customFile := v.name + v.suffix
 
 		distPath := filepath.Join(project.root, v.getDir())
+		fmt.Println(project.root, v.getDir(), distPath)
 		makePath := filepath.Join(distPath, distFile)
 		customPath := filepath.Join(distPath, customFile)
 		project.writer.compareSnippet(v, customPath)

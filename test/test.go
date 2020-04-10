@@ -37,7 +37,7 @@ func main() {
 	s := snippet.NewSnippet(suffix.Go)
 	s.SetName("test")
 	s.SetNamespace("main")
-	s.SetDir("snippets")
+	s.SetDir("snippets2")
 	s.AddTag("build dev")
 	s.SetMakeSuffix(".mix")
 	s.AddBlock(mainBlock)
