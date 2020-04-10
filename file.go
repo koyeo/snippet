@@ -5,7 +5,9 @@ import (
 )
 
 func NewFile() *File {
-	return &File{}
+	return &File{
+		trimSpace: true,
+	}
 }
 
 type File struct {
@@ -16,6 +18,11 @@ type File struct {
 	makeSuffix string
 	content    string
 	data       interface{}
+	trimSpace  bool
+}
+
+func (p *File) SetTrimSpace(trimSpace bool) {
+	p.trimSpace = trimSpace
 }
 
 func (p *File) fullPath() string {

@@ -62,8 +62,9 @@ func (p *Snippets) render(project *Project) {
 		if err != nil {
 			logger.Fatal("Render snippet error: ", err)
 		}
-
-		content = TrimSpace(content)
+		if v.trimSpace {
+			content = TrimSpace(content)
+		}
 
 		if content != "" {
 			if v.formatter != nil {

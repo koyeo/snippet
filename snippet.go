@@ -9,7 +9,7 @@ type RenderFunc func(ctx pongo2.Context, snippet *Snippet) (content string, err 
 type FormatterFunc func(content string) (string, error)
 
 func NewSnippet(suffix string) *Snippet {
-	return &Snippet{suffix: suffix}
+	return &Snippet{suffix: suffix, trimSpace: true}
 }
 
 type Snippet struct {
@@ -29,6 +29,11 @@ type Snippet struct {
 	render       RenderFunc
 	formatter    FormatterFunc
 	ignore       bool
+	trimSpace    bool
+}
+
+func (p *Snippet) SetTrimSpace(trimSpace bool) {
+	p.trimSpace = trimSpace
 }
 
 func (p *Snippet) SetIgnore(ignore bool) {

@@ -53,9 +53,9 @@ func (p *Files) render(project *Project, root string) {
 		if err != nil {
 			logger.Fatal("Render content error: ", err)
 		}
-
-		content = TrimSpace(content)
-
+		if v.trimSpace {
+			content = TrimSpace(content)
+		}
 		if !storage.PathExist(customPath) {
 			project.writer.addMakeRenderFile(distPath, makePath, customPath, content, true)
 		}
