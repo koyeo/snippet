@@ -55,7 +55,7 @@ func (p *Snippets) render(project *Project) {
 		}
 
 		if v.render == nil {
-			logger.Fatal("Render snippet error: ", fmt.Errorf("\"%s\" not set render func", distPath))
+			logger.Fatal("Render snippet error: ", fmt.Errorf("\"%s\" not set render func", makePath))
 		}
 
 		content, err := v.render(project.ctx, v)
