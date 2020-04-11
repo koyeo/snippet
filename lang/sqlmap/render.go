@@ -1,44 +1,42 @@
 package sqlmap
 
-type renderData struct {
-	Blocks    []*renderBlock
-}
+import (
+	"github.com/flosch/pongo2"
+	"github.com/koyeo/snippet"
+)
 
+type renderData struct {
+	Blocks []*renderBlock
+}
 
 type renderBlock struct {
 	Rule string
 	Code string
 }
 
-//func prepareRenderData(snippet core.Snippet) *renderData {
-//
-//	data := new(renderData)
-//
-//	for _, v := range snippet.GetBlocks() {
-//		if v.GetFilter() != nil {
-//			data.Blocks = append(data.Blocks, &renderBlock{
-//				Rule: v.GetFilter().Rule(),
-//				Code: v.GetCode(),
-//			})
-//		} else {
-//			data.Blocks = append(data.Blocks, &renderBlock{
-//				Code: v.GetCode(),
-//			})
-//		}
-//	}
-//
-//	return data
-//}
+func prepareRenderData(snippet *snippet.Snippet) *renderData {
 
-//func Render(snippet core.Snippet) (content string, err error) {
-//
-//	//content, err = template.Render(fileTpl, prepareRenderData(snippet))
-//	//if err != nil {
-//	//	return
-//	//}
-//
-//	return
-//}
+	data := new(renderData)
+
+	for _, v := range snippet.Blocks() {
+		if v.Filter() != nil {
+			data.Blocks = append(data.Blocks, &renderBlock{
+				Rule: v.Filter().Rule(),
+				Code: v.Code(),
+			})
+		} else {
+			data.Blocks = append(data.Blocks, &renderBlock{
+				Code: v.Code(),
+			})
+		}
+	}
+
+	return data
+}
+
+func Render(ctx pongo2.Context, item *snippet.Snippet) (string, error) {
+	return snippet.Render(ctx, fileTpl, prepareRenderData(item))
+}
 
 var fileTpl = `
 <sqlMap>
