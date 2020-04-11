@@ -10,7 +10,7 @@ func (p *Filter) SetRule(rule string) {
 	p.rule = rule
 }
 
-func (p *Filter) GetRule() string {
+func (p *Filter) Rule() string {
 	return p.rule
 }
 

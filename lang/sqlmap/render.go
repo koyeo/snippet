@@ -17,7 +17,7 @@ type renderBlock struct {
 //	for _, v := range snippet.GetBlocks() {
 //		if v.GetFilter() != nil {
 //			data.Blocks = append(data.Blocks, &renderBlock{
-//				Rule: v.GetFilter().GetRule(),
+//				Rule: v.GetFilter().Rule(),
 //				Code: v.GetCode(),
 //			})
 //		} else {

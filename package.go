@@ -13,7 +13,7 @@ func (p *Package) SetName(name string) {
 	p.name = name
 }
 
-func (p *Package) GetName() (name string) {
+func (p *Package) Name() (name string) {
 	name = p.name
 	return
 }
@@ -22,7 +22,7 @@ func (p *Package) SetPath(path string) {
 	p.path = path
 }
 
-func (p *Package) GetPath() (path string) {
+func (p *Package) Path() (path string) {
 	path = p.path
 	return
 }

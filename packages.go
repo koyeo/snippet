@@ -16,9 +16,9 @@ func (p *Packages) Add(packages ...*Package) {
 	}
 
 	for _, v := range packages {
-		if _, ok := p.packageMap[v.GetPath()]; !ok {
+		if _, ok := p.packageMap[v.Path()]; !ok {
 			p.packageList = append(p.packageList, v)
-			p.packageMap[v.GetPath()] = true
+			p.packageMap[v.Path()] = true
 		}
 	}
 }

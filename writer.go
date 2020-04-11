@@ -174,7 +174,7 @@ func (p *Writer) compareSnippet(snippet *Snippet, customPath string) {
 	i := 0
 	for _, v := range items {
 		if v.Filter() != nil {
-			if p.matchSegment(v.Filter().GetRule(), compareContent) {
+			if p.matchSegment(v.Filter().Rule(), compareContent) {
 				v.SetExist(true)
 				i++
 				continue

@@ -31,12 +31,12 @@ func prepareRenderGolangData(snippet *snippet.Snippet) *renderGolangData {
 	data := new(renderGolangData)
 
 	data.Tags = snippet.GetTags()
-	data.Namespace = snippet.GetNamespace()
+	data.Namespace = snippet.Namespace()
 
 	for _, v := range snippet.Packages() {
 		data.Packages = append(data.Packages, &renderGolangPackage{
-			Name: v.GetName(),
-			Path: v.GetPath(),
+			Name: v.Name(),
+			Path: v.Path(),
 		})
 	}
 

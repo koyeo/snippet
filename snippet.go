@@ -68,7 +68,7 @@ func (p *Snippet) Commit() {
 	p.Cache().Add(filePath)
 
 	for _, v := range p.tmpConstants {
-		if v.filter != nil && p.Cache().Match(filePath, v.filter.GetRule()) {
+		if v.filter != nil && p.Cache().Match(filePath, v.filter.Rule()) {
 			continue
 		}
 		p.constants = append(p.constants, v)
@@ -76,7 +76,7 @@ func (p *Snippet) Commit() {
 	p.tmpConstants = make([]*Block, 0)
 
 	for _, v := range p.tmpBlocks {
-		if v.filter != nil && p.Cache().Match(filePath, v.filter.GetRule()) {
+		if v.filter != nil && p.Cache().Match(filePath, v.filter.Rule()) {
 			continue
 		}
 		p.blocks = append(p.blocks, v)
@@ -147,7 +147,7 @@ func (p *Snippet) SetNamespace(namespace string) {
 	p.namespace = namespace
 }
 
-func (p *Snippet) GetNamespace() string {
+func (p *Snippet) Namespace() string {
 	return p.namespace
 }
 
