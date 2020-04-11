@@ -42,10 +42,7 @@ var fileTpl = `
 <sqlMap>
 <\n>
 {% for block in Blocks %}
-	<block rule="{{ block.Rule }}">
-		{{ block.Code }}
-		<\n>
-	</block>
+	{{ block.Code }}
 {% endfor %}
 </sqlMap>
 `
