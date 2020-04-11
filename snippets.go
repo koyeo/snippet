@@ -1,7 +1,7 @@
 package snippet
 
 import (
-	"errors"
+	"fmt"
 	"github.com/koyeo/snippet/logger"
 	"github.com/koyeo/snippet/storage"
 	"path/filepath"
@@ -55,7 +55,7 @@ func (p *Snippets) render(project *Project) {
 		}
 
 		if v.render == nil {
-			logger.Fatal("Render snippet error: ", errors.New("not set render func"))
+			logger.Fatal("Render snippet error: ", fmt.Errorf("%s not set render func", v.name))
 		}
 
 		content, err := v.render(project.ctx, v)
