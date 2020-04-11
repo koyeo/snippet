@@ -11,6 +11,7 @@ func NewProject() *Project {
 
 type Project struct {
 	root           string
+	filterPaths    []string
 	makeFileSuffix *Collection
 	makeFilePrefix *Collection
 	makeDirSuffix  *Collection
@@ -23,6 +24,10 @@ type Project struct {
 	debug          bool
 	ctx            pongo2.Context
 	hideMakeDone   bool
+}
+
+func (p *Project) SetFilterPaths(filterPaths []string) {
+	p.filterPaths = filterPaths
 }
 
 func (p *Project) HideMakeDone() {
@@ -110,6 +115,7 @@ func (p *Project) AddSnippet(snippets ...*Snippet) {
 
 func (p *Project) Render() {
 	p.initWriter()
+	p.initFilterPaths()
 	p.collectMakePrefixAndSuffix()
 	p.loadLocalFiles()
 	p.loadLocalDirs()
@@ -172,7 +178,7 @@ func (p *Project) loadLocalFiles() {
 	p.initMakeFilePrefix()
 	p.initMakeFileSuffix()
 
-	err := p.writer.loadLocalRenderFiles(p.debug, p.root, p.ignore, p.makeFilePrefix.All(), p.makeFileSuffix.All())
+	err := p.writer.loadLocalRenderFiles(p.debug, p.filterPaths, p.ignore, p.makeFilePrefix.All(), p.makeFileSuffix.All())
 	if err != nil {
 		logger.Fatal("Load local render files error: ", err)
 	}
@@ -183,9 +189,15 @@ func (p *Project) loadLocalDirs() {
 	p.initMakeDirPrefix()
 	p.initMakeDirSuffix()
 
-	err := p.writer.loadLocalRenderDirs(p.debug, p.root, p.ignore, p.makeDirPrefix.All(), p.makeDirSuffix.All())
+	err := p.writer.loadLocalRenderDirs(p.debug, p.filterPaths, p.ignore, p.makeDirPrefix.All(), p.makeDirSuffix.All())
 	if err != nil {
 		logger.Fatal("Load local render dirs error: ", err)
+	}
+}
+
+func (p *Project) initFilterPaths() {
+	if len(p.filterPaths) == 0 {
+		p.filterPaths = append(p.filterPaths, p.root)
 	}
 }
 

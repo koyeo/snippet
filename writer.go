@@ -106,49 +106,53 @@ func (p *Writer) addFunc(name string, _func TemplateFunc) {
 	p.funcs[name] = _func
 }
 
-func (p *Writer) loadLocalRenderFiles(debug bool, path string, ignore, prefix, suffix []string) (err error) {
+func (p *Writer) loadLocalRenderFiles(debug bool, paths []string, ignore, prefix, suffix []string) (err error) {
 
 	if len(prefix) == 0 && len(suffix) == 0 {
 		return
 	}
 
-	if !storage.PathExist(path) {
-		return
-	}
-
-	files, err := storage.ReadFiles(debug, path, ignore, prefix, suffix)
-	if err != nil {
-		return
-	}
-	for _, file := range files {
-		var content string
-		content, err = storage.ReadFile(file)
-		if err != nil {
+	for _, path := range paths {
+		if !storage.PathExist(path) {
 			return
 		}
-		p.addLocalRenderFile(file, content)
+
+		files, err := storage.ReadFiles(debug, path, ignore, prefix, suffix)
+		if err != nil {
+			return err
+		}
+		for _, file := range files {
+			var content string
+			content, err = storage.ReadFile(file)
+			if err != nil {
+				return err
+			}
+			p.addLocalRenderFile(file, content)
+		}
 	}
 
 	return
 }
 
-func (p *Writer) loadLocalRenderDirs(debug bool, path string, ignore, prefix, suffix []string) (err error) {
+func (p *Writer) loadLocalRenderDirs(debug bool, paths []string, ignore, prefix, suffix []string) (err error) {
 
 	if len(prefix) == 0 && len(suffix) == 0 {
 		return
 	}
 
-	if !storage.PathExist(path) {
-		return
-	}
+	for _, path := range paths {
+		if !storage.PathExist(path) {
+			return
+		}
 
-	dirs, err := storage.ReadDirs(debug, path, ignore, prefix, suffix)
-	if err != nil {
-		return
-	}
+		dirs, err := storage.ReadDirs(debug, path, ignore, prefix, suffix)
+		if err != nil {
+			return err
+		}
 
-	for _, dir := range dirs {
-		p.addLocalRenderDir(dir)
+		for _, dir := range dirs {
+			p.addLocalRenderDir(dir)
+		}
 	}
 
 	return
