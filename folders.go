@@ -34,8 +34,15 @@ func (p *Folders) All() []*Folder {
 func (p *Folders) render(project *Project) {
 	for _, v := range p.folderList {
 
-		distPath := filepath.Join(project.root, v.dir, v.makePrefix+v.name+v.makeSuffix)
-		customPath := filepath.Join(project.root, v.name)
+		var distPath string
+		var customPath string
+		if v.absolutePath {
+			distPath = filepath.Join(v.dir, v.makePrefix+v.name+v.makeSuffix)
+			customPath = v.name
+		} else {
+			distPath = filepath.Join(project.root, v.dir, v.makePrefix+v.name+v.makeSuffix)
+			customPath = filepath.Join(project.root, v.name)
+		}
 
 		v.initFiles()
 		v.files.render(project, distPath)

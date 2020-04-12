@@ -45,8 +45,12 @@ func (p *Snippets) render(project *Project) {
 
 		distFile := v.makePrefix + v.name + v.makeSuffix + v.suffix
 		customFile := v.name + v.suffix
-
-		distPath := filepath.Join(project.root, v.getDir())
+		var distPath string
+		if v.absolutePath {
+			distPath = filepath.Join(project.root, v.getDir())
+		} else {
+			distPath = v.getDir()
+		}
 		makePath := filepath.Join(distPath, distFile)
 		customPath := filepath.Join(distPath, customFile)
 		project.writer.compareSnippet(v, customPath)

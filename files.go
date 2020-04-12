@@ -45,7 +45,12 @@ func (p *Files) render(project *Project, root string) {
 		distFile := v.makePrefix + v.name + v.makeSuffix + v.suffix
 		customFile := v.name + v.suffix
 
-		distPath := filepath.Join(root, v.dir)
+		var distPath string
+		if v.absolutePath {
+			distPath = v.dir
+		} else {
+			distPath = filepath.Join(root, v.dir)
+		}
 		makePath := filepath.Join(distPath, distFile)
 		customPath := filepath.Join(distPath, customFile)
 

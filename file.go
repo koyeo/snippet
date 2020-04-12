@@ -11,14 +11,19 @@ func NewFile() *File {
 }
 
 type File struct {
-	dir        string
-	name       string
-	suffix     string
-	makePrefix string
-	makeSuffix string
-	content    string
-	data       interface{}
-	trimSpace  bool
+	dir          string
+	name         string
+	suffix       string
+	makePrefix   string
+	makeSuffix   string
+	content      string
+	data         interface{}
+	trimSpace    bool
+	absolutePath bool
+}
+
+func (p *File) SetAbsolutePath(absolutePath bool) {
+	p.absolutePath = absolutePath
 }
 
 func (p *File) SetTrimSpace(trimSpace bool) {
@@ -26,7 +31,7 @@ func (p *File) SetTrimSpace(trimSpace bool) {
 }
 
 func (p *File) fullPath() string {
-	return filepath.Join(p.dir, p.name)
+	return filepath.Join(p.dir, p.name, p.suffix)
 }
 
 func (p *File) SetDir(dir string) {
