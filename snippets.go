@@ -47,9 +47,9 @@ func (p *Snippets) render(project *Project) {
 		customFile := v.name + v.suffix
 		var distPath string
 		if v.absolutePath {
-			distPath = filepath.Join(project.root, v.getDir())
-		} else {
 			distPath = v.getDir()
+		} else {
+			distPath = filepath.Join(project.root, v.getDir())
 		}
 		makePath := filepath.Join(distPath, distFile)
 		customPath := filepath.Join(distPath, customFile)
