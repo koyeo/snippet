@@ -26,8 +26,8 @@ type Project struct {
 	hideMakeDone   bool
 }
 
-func (p *Project) SetFilterPaths(filterPaths []string) {
-	p.filterPaths = filterPaths
+func (p *Project) AddFilterPath(filterPaths ...string) {
+	p.filterPaths = append(p.filterPaths, filterPaths...)
 }
 
 func (p *Project) HideMakeDone() {
@@ -42,8 +42,8 @@ func (p *Project) SetDebug() {
 	p.debug = true
 }
 
-func (p *Project) SetIgnore(ignore ...string) {
-	p.ignore = ignore
+func (p *Project) AddIgnore(ignores ...string) {
+	p.ignore = append(p.ignore, ignores...)
 }
 
 func (p *Project) initFiles() {
