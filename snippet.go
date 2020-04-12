@@ -30,11 +30,6 @@ type Snippet struct {
 	formatter    FormatterFunc
 	ignore       bool
 	trimSpace    bool
-	absolutePath bool
-}
-
-func (p *Snippet) SetAbsolutePath(absolutePath bool) {
-	p.absolutePath = absolutePath
 }
 
 func (p *Snippet) SetTrimSpace(trimSpace bool) {

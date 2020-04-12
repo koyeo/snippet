@@ -40,17 +40,14 @@ func (p *Snippets) All() (snippets []*Snippet) {
 	return
 }
 
-func (p *Snippets) render(project *Project) {
+func (p *Snippets) render(project *Project, workspace *Workspace) {
 	for _, v := range p.snippetList {
 
 		distFile := v.makePrefix + v.name + v.makeSuffix + v.suffix
 		customFile := v.name + v.suffix
-		var distPath string
-		if v.absolutePath {
-			distPath = v.getDir()
-		} else {
-			distPath = filepath.Join(project.root, v.getDir())
-		}
+
+		distPath := filepath.Join(workspace.root, v.getDir())
+
 		makePath := filepath.Join(distPath, distFile)
 		customPath := filepath.Join(distPath, customFile)
 		project.writer.compareSnippet(v, customPath)

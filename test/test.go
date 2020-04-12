@@ -46,13 +46,24 @@ func main() {
 	s.SetFormatter(golang.Formatter)
 	s.Commit()
 
+	// 定义工作空间
+	workspace1 := snippet.NewWorkspace()
+	workspace1.SetRoot("./example", true)
+	workspace1.AddFile(testFile)
+	workspace1.AddFolder(testFolder)
+	workspace1.AddIgnorePath("vendor")
+	workspace1.AddSnippet(s)
+
+	workspace2 := snippet.NewWorkspace()
+	workspace2.SetRoot("./example2", true)
+	workspace2.AddFile(testFile)
+	workspace2.AddFolder(testFolder)
+	workspace2.AddIgnorePath("vendor")
+	workspace2.AddSnippet(s)
+
 	// 定义项目
 	project := snippet.NewProject()
-	project.SetRoot("./example")
-	project.AddFile(testFile)
-	project.AddFolder(testFolder)
-	project.SetIgnore("vendor")
-	project.AddSnippet(s)
+	project.AddWorkspace(workspace1, workspace2)
 	project.Render()
 }
 

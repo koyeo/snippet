@@ -15,14 +15,15 @@ func (p *Collection) initMap() {
 	}
 }
 
-func (p *Collection) Add(v string) {
+func (p *Collection) Add(items ...string) {
 	p.initMap()
-	if _, ok := p._map[v]; ok {
-		return
+	for _, v := range items {
+		if _, ok := p._map[v]; ok {
+			continue
+		}
+		p._map[v] = true
+		p.list = append(p.list, v)
 	}
-
-	p._map[v] = true
-	p.list = append(p.list, v)
 }
 
 func (p *Collection) All() []string {

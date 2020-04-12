@@ -10,57 +10,28 @@ func NewProject() *Project {
 }
 
 type Project struct {
-	root           string
-	filterPaths    []string
+	filterPaths    *Collection
+	ignorePaths    *Collection
 	makeFileSuffix *Collection
 	makeFilePrefix *Collection
 	makeDirSuffix  *Collection
 	makeDirPrefix  *Collection
-	ignorePaths    []string
-	files          *Files
-	folders        *Folders
-	snippets       *Snippets
+	workspaces     []*Workspace
 	writer         *Writer
 	debug          bool
 	ctx            pongo2.Context
 	hideMakeDone   bool
 }
 
-func (p *Project) AddFilterPath(filterPaths ...string) {
-	p.filterPaths = append(p.filterPaths, filterPaths...)
-}
-
-func (p *Project) HideMakeDone() {
-	p.hideMakeDone = true
-}
-
-func (p *Project) SetCtx(ctx pongo2.Context) {
-	p.ctx = ctx
-}
-
-func (p *Project) SetDebug() {
-	p.debug = true
-}
-
-func (p *Project) AddIgnorePath(ignores ...string) {
-	p.ignorePaths = append(p.ignorePaths, ignores...)
-}
-
-func (p *Project) initFiles() {
-	if p.files == nil {
-		p.files = NewFiles()
+func (p *Project) initFilterPaths() {
+	if p.filterPaths == nil {
+		p.filterPaths = NewCollection()
 	}
 }
 
-func (p *Project) initFolders() {
-	if p.folders == nil {
-		p.folders = NewFolders()
-	}
-}
-
-func (p *Project) initSnippets() {
-	if p.snippets == nil {
-		p.snippets = NewSnippets()
+func (p *Project) initIgnorePaths() {
+	if p.ignorePaths == nil {
+		p.ignorePaths = NewCollection()
 	}
 }
 
@@ -88,97 +59,51 @@ func (p *Project) initMakeDirSuffix() {
 	}
 }
 
+func (p *Project) AddWorkspace(workspace ...*Workspace) {
+	p.workspaces = append(p.workspaces, workspace...)
+}
+
+func (p *Project) HideMakeDone() {
+	p.hideMakeDone = true
+}
+
+func (p *Project) SetCtx(ctx pongo2.Context) {
+	p.ctx = ctx
+}
+
+func (p *Project) SetDebug() {
+	p.debug = true
+}
+
 func (p *Project) initWriter() {
 	if p.writer == nil {
 		p.writer = NewWriter()
 	}
 }
 
-func (p *Project) SetRoot(root string) {
-	p.root = root
-}
-
-func (p *Project) AddFile(files ...*File) {
-	p.initFiles()
-	p.files.Add(files...)
-}
-
-func (p *Project) AddFolder(folders ...*Folder) {
-	p.initFolders()
-	p.folders.Add(folders...)
-}
-
-func (p *Project) AddSnippet(snippets ...*Snippet) {
-	p.initSnippets()
-	p.snippets.Add(snippets...)
-}
-
 func (p *Project) Render() {
 	p.initWriter()
-	p.initFilterPaths()
 	p.collectMakePrefixAndSuffix()
 	p.loadLocalFiles()
 	p.loadLocalDirs()
-	p.renderSnippets()
-	p.renderFiles()
-	p.renderFolders()
 	p.render()
 	p.clean()
 }
 
-func (p *Project) collectMakePrefixAndSuffix() {
-
-	p.initMakeFilePrefix()
-	p.initMakeFileSuffix()
-	p.initMakeDirPrefix()
-	p.initMakeDirSuffix()
-
-	p.initSnippets()
-	for _, v := range p.snippets.All() {
-		if v.makePrefix != "" {
-			p.makeFilePrefix.Add(v.makePrefix)
-		}
-		if v.makeSuffix != "" {
-			p.makeFileSuffix.Add(v.makeSuffix + v.suffix)
-		}
-	}
-
-	p.initFiles()
-	for _, v := range p.files.All() {
-		if v.makePrefix != "" {
-			p.makeFilePrefix.Add(v.makePrefix)
-		}
-		if v.makeSuffix != "" {
-			p.makeFileSuffix.Add(v.makeSuffix + v.suffix)
-		}
-	}
-
-	p.initFolders()
-	for _, v := range p.folders.All() {
-		v.initFiles()
-		for _, vv := range v.files.All() {
-			if vv.makePrefix != "" {
-				p.makeFilePrefix.Add(vv.makePrefix)
-			}
-			if vv.makeSuffix != "" {
-				p.makeFileSuffix.Add(vv.makeSuffix + vv.suffix)
-			}
-		}
-		if v.makePrefix != "" {
-			p.makeDirPrefix.Add(v.makePrefix)
-		}
-		if v.makeSuffix != "" {
-			p.makeDirSuffix.Add(v.makeSuffix)
-		}
-	}
-}
-
 func (p *Project) loadLocalFiles() {
 
+	p.initFilterPaths()
+	p.initIgnorePaths()
 	p.initMakeFilePrefix()
 	p.initMakeFileSuffix()
 
-	err := p.writer.loadLocalRenderFiles(p.debug, p.filterPaths, p.ignorePaths, p.makeFilePrefix.All(), p.makeFileSuffix.All())
+	err := p.writer.loadLocalRenderFiles(
+		p.debug,
+		p.filterPaths.All(),
+		p.ignorePaths.All(),
+		p.makeFilePrefix.All(),
+		p.makeFileSuffix.All(),
+	)
 	if err != nil {
 		logger.Fatal("Load local render files error: ", err)
 	}
@@ -186,37 +111,58 @@ func (p *Project) loadLocalFiles() {
 
 func (p *Project) loadLocalDirs() {
 
+	p.initFilterPaths()
+	p.initIgnorePaths()
 	p.initMakeDirPrefix()
 	p.initMakeDirSuffix()
 
-	err := p.writer.loadLocalRenderDirs(p.debug, p.filterPaths, p.ignorePaths, p.makeDirPrefix.All(), p.makeDirSuffix.All())
+	err := p.writer.loadLocalRenderDirs(
+		p.debug,
+		p.filterPaths.All(),
+		p.ignorePaths.All(),
+		p.makeDirPrefix.All(),
+		p.makeDirSuffix.All(),
+	)
 	if err != nil {
 		logger.Fatal("Load local render dirs error: ", err)
 	}
 }
 
-func (p *Project) initFilterPaths() {
-	if len(p.filterPaths) == 0 {
-		p.filterPaths = append(p.filterPaths, p.root)
+func (p *Project) collectMakePrefixAndSuffix() {
+
+	p.initFilterPaths()
+	p.initIgnorePaths()
+	p.initMakeDirPrefix()
+	p.initMakeDirSuffix()
+	p.initMakeFilePrefix()
+	p.initMakeFileSuffix()
+
+	for _, v := range p.workspaces {
+		if v.filterPaths != nil {
+			p.filterPaths.Add(v.filterPaths.All()...)
+		}
+		if v.ignorePaths != nil {
+			p.ignorePaths.Add(v.ignorePaths.All()...)
+		}
+		if v.makeDirPrefix != nil {
+			p.makeDirPrefix.Add(v.makeDirPrefix.All()...)
+		}
+		if v.makeDirSuffix != nil {
+			p.makeDirSuffix.Add(v.makeDirSuffix.All()...)
+		}
+		if v.makeFilePrefix != nil {
+			p.makeFilePrefix.Add(v.makeFilePrefix.All()...)
+		}
+		if v.makeFileSuffix != nil {
+			p.makeFileSuffix.Add(v.makeFileSuffix.All()...)
+		}
 	}
 }
 
-func (p *Project) renderSnippets() {
-	p.initSnippets()
-	p.snippets.render(p)
-}
-
-func (p *Project) renderFiles() {
-	p.initFiles()
-	p.files.render(p, p.root)
-}
-
-func (p *Project) renderFolders() {
-	p.initFolders()
-	p.folders.render(p)
-}
-
 func (p *Project) render() {
+	for _, v := range p.workspaces {
+		v.render(p)
+	}
 	p.writer.render()
 }
 

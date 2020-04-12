@@ -10,11 +10,6 @@ type Folder struct {
 	makePrefix string
 	makeSuffix string
 	files      *Files
-	absolutePath bool
-}
-
-func (p *Folder) SetAbsolutePath(absolutePath bool) {
-	p.absolutePath = absolutePath
 }
 
 func (p *Folder) SetDir(dir string) {

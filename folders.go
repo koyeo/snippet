@@ -31,18 +31,14 @@ func (p *Folders) All() []*Folder {
 	return p.folderList
 }
 
-func (p *Folders) render(project *Project) {
+func (p *Folders) render(project *Project, workspace *Workspace) {
 	for _, v := range p.folderList {
 
 		var distPath string
 		var customPath string
-		if v.absolutePath {
-			distPath = filepath.Join(v.dir, v.makePrefix+v.name+v.makeSuffix)
-			customPath = v.name
-		} else {
-			distPath = filepath.Join(project.root, v.dir, v.makePrefix+v.name+v.makeSuffix)
-			customPath = filepath.Join(project.root, v.name)
-		}
+
+		distPath = filepath.Join(workspace.root, v.dir, v.makePrefix+v.name+v.makeSuffix)
+		customPath = filepath.Join(workspace.root, v.name)
 
 		v.initFiles()
 		v.files.render(project, distPath)
