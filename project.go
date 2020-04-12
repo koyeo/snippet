@@ -16,7 +16,7 @@ type Project struct {
 	makeFilePrefix *Collection
 	makeDirSuffix  *Collection
 	makeDirPrefix  *Collection
-	ignore         []string
+	ignorePaths    []string
 	files          *Files
 	folders        *Folders
 	snippets       *Snippets
@@ -42,8 +42,8 @@ func (p *Project) SetDebug() {
 	p.debug = true
 }
 
-func (p *Project) AddIgnore(ignores ...string) {
-	p.ignore = append(p.ignore, ignores...)
+func (p *Project) AddIgnorePath(ignores ...string) {
+	p.ignorePaths = append(p.ignorePaths, ignores...)
 }
 
 func (p *Project) initFiles() {
@@ -178,7 +178,7 @@ func (p *Project) loadLocalFiles() {
 	p.initMakeFilePrefix()
 	p.initMakeFileSuffix()
 
-	err := p.writer.loadLocalRenderFiles(p.debug, p.filterPaths, p.ignore, p.makeFilePrefix.All(), p.makeFileSuffix.All())
+	err := p.writer.loadLocalRenderFiles(p.debug, p.filterPaths, p.ignorePaths, p.makeFilePrefix.All(), p.makeFileSuffix.All())
 	if err != nil {
 		logger.Fatal("Load local render files error: ", err)
 	}
@@ -189,7 +189,7 @@ func (p *Project) loadLocalDirs() {
 	p.initMakeDirPrefix()
 	p.initMakeDirSuffix()
 
-	err := p.writer.loadLocalRenderDirs(p.debug, p.filterPaths, p.ignore, p.makeDirPrefix.All(), p.makeDirSuffix.All())
+	err := p.writer.loadLocalRenderDirs(p.debug, p.filterPaths, p.ignorePaths, p.makeDirPrefix.All(), p.makeDirSuffix.All())
 	if err != nil {
 		logger.Fatal("Load local render dirs error: ", err)
 	}
