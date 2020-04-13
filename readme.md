@@ -93,10 +93,11 @@ func main() {
 	testFolder.SetMakePrefix("make-")
 	testFolder.AddFile(testFile)
 
-    workspace := snippet.NewWorkspace()
-    workspace.SetRoot("./make-example",true)
-    workspace.AddFile(testFile)
-    workspace.AddFolder(testFolder)
+        workspace := snippet.NewWorkspace()
+        workspace.SetRoot("./make-example",true)
+        workspace.AddFile(testFile)
+        workspace.AddFolder(testFolder)
+
 	project := snippet.NewProject()
 	project.Render()
 }
