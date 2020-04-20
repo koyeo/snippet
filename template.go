@@ -54,10 +54,6 @@ func wrapCtxFunc(ctx1 *pongo2.Context, ctx2 pongo2.Context) {
 	for k, v := range ctx2 {
 		(*ctx1)[k] = v
 	}
-	(*ctx1)["DBL"] = "{{"
-	(*ctx1)["DBR"] = "}}"
-	(*ctx1)["DPL"] = "{%"
-	(*ctx1)["DPR"] = "%}"
 }
 
 func makeContext(ctx pongo2.Context, input interface{}) pongo2.Context {
@@ -79,6 +75,13 @@ func makeContext(ctx pongo2.Context, input interface{}) pongo2.Context {
 	if ctx != nil {
 		wrapCtxFunc(&data, ctx)
 	}
+
+	(data)["BL"] = "{"
+	(data)["BR"] = "}"
+	(data)["DBL"] = "{{"
+	(data)["DBR"] = "}}"
+	(data)["DPL"] = "{%"
+	(data)["DPR"] = "%}"
 
 	return data
 }
