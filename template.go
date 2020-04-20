@@ -51,6 +51,11 @@ func TrimSpace(content string) string {
 }
 
 func wrapCtxFunc(ctx1 *pongo2.Context, ctx2 pongo2.Context) {
+
+	(*ctx1)["DBL"] = "{{"
+	(*ctx1)["DBR"] = "}}"
+	(*ctx1)["DPL"] = "{%"
+	(*ctx1)["DPR"] = "%}"
 	for k, v := range ctx2 {
 		(*ctx1)[k] = v
 	}
