@@ -1,6 +1,7 @@
 package snippet
 
 import (
+	"fmt"
 	"github.com/koyeo/snippet/logger"
 	"github.com/koyeo/snippet/storage"
 	"path/filepath"
@@ -60,7 +61,7 @@ func (p *Files) render(project *Project, root string) {
 			if v.formatter != nil {
 				content, err = v.formatter(content)
 				if err != nil {
-					logger.Fatal("Format snippet error: ", err)
+					logger.Fatal(fmt.Sprintf("Format file %s error: ", makePath), err)
 				}
 			}
 			project.writer.addMakeRenderFile(distPath, makePath, customPath, content, true)
