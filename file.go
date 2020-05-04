@@ -17,8 +17,17 @@ type File struct {
 	makePrefix string
 	makeSuffix string
 	content    string
+	formatter  FormatterFunc
 	data       interface{}
 	trimSpace  bool
+}
+
+func (p *File) Formatter() FormatterFunc {
+	return p.formatter
+}
+
+func (p *File) SetFormatter(formatter FormatterFunc) {
+	p.formatter = formatter
 }
 
 func (p *File) SetTrimSpace(trimSpace bool) {

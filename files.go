@@ -57,6 +57,12 @@ func (p *Files) render(project *Project, root string) {
 			content = TrimSpace(content)
 		}
 		if !storage.PathExist(customPath) {
+			if v.formatter != nil {
+				content, err = v.formatter(content)
+				if err != nil {
+					logger.Fatal("Format snippet error: ", err)
+				}
+			}
 			project.writer.addMakeRenderFile(distPath, makePath, customPath, content, true)
 		}
 	}
