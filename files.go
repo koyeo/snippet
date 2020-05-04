@@ -61,7 +61,6 @@ func (p *Files) render(project *Project, root string) {
 			if v.formatter != nil {
 				content, err = v.formatter(content)
 				if err != nil {
-					fmt.Println(content)
 					logger.Fatal(fmt.Sprintf("Format file %s error: ", makePath), err)
 				}
 			}

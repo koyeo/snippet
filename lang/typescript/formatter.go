@@ -14,14 +14,17 @@ func Formatter(content string) (output string, err error) {
 	c.Stdin = strings.NewReader(content)
 	c.Stdout = outBuffer
 	c.Stderr = errBuffer
+	defer func() {
+		if errBuffer.String() != "" {
+			err = fmt.Errorf(errBuffer.String())
+		}
+	}()
 	err = c.Start()
 	if err != nil {
-		err = fmt.Errorf(err.Error() + " " + errBuffer.String())
 		return
 	}
 	err = c.Wait()
 	if err != nil {
-		err = fmt.Errorf(err.Error() + " " + errBuffer.String())
 		return
 	}
 	output = outBuffer.String()
