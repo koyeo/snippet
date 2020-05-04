@@ -8,14 +8,16 @@ import (
 
 func Formatter(content string) (output string, err error) {
 	outBuffer := new(bytes.Buffer)
-	c2 := exec.Command("prettier", "--parser", "typescript", "--single-quote")
-	c2.Stdin = strings.NewReader(content)
-	c2.Stdout = outBuffer
-	err = c2.Start()
+	errBuffer := new(bytes.Buffer)
+	c := exec.Command("prettier", "--parser", "typescript", "--single-quote")
+	c.Stdin = strings.NewReader(content)
+	c.Stdout = outBuffer
+	c.Stderr = errBuffer
+	err = c.Start()
 	if err != nil {
 		return
 	}
-	err = c2.Wait()
+	err = c.Wait()
 	if err != nil {
 		return
 	}
