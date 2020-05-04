@@ -76,12 +76,12 @@ func makeContext(ctx pongo2.Context, input interface{}) pongo2.Context {
 		wrapCtxFunc(&data, ctx)
 	}
 
-	data["BL"] = "{"
-	data["BR"] = "}"
-	data["DBL"] = "{{"
-	data["DBR"] = "}}"
-	data["DPL"] = "{%"
-	data["DPR"] = "%}"
+	data["LB"] = "{"
+	data["RB"] = "}"
+	data["LDB"] = "{{"
+	data["RDB"] = "}}"
+	data["LDP"] = "{%"
+	data["RDP"] = "%}"
 
 	return data
 }
