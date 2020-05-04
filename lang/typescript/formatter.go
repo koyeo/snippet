@@ -8,7 +8,7 @@ import (
 
 func Formatter(content string) (output string, err error) {
 	outBuffer := new(bytes.Buffer)
-	c2 := exec.Command("prettier", "--parser", "typescript")
+	c2 := exec.Command("prettier", "--parser", "typescript", "--single-quote")
 	c2.Stdin = strings.NewReader(content)
 	c2.Stdout = outBuffer
 	err = c2.Start()
