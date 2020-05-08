@@ -14,7 +14,7 @@ func main() {
 	// 定义生成文件
 	testFile := snippet.NewFile()
 	testFile.SetName("test")
-	testFile.SetDir("file-dir")
+	testFile.SetDir("make-file-dir")
 	testFile.SetSuffix(".md")
 	testFile.SetMakeSuffix(".make")
 	testFile.SetContent(`Hello world!`, nil)

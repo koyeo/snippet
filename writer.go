@@ -201,17 +201,15 @@ func (p *Writer) clean(makeDirs *Collection) {
 	}
 
 	for dirPath, renderDir := range p.renderDirs {
-		fmt.Println("clear dir:")
-		fmt.Println("  dir path:", dirPath)
-		fmt.Println("  make files:", renderDir.MakeFiles)
-		fmt.Println("  custom:", renderDir.CustomPath,storage.PathExist(renderDir.CustomPath))
-		if renderDir.MakeFiles == 0 || storage.PathExist(renderDir.CustomPath) {
-			err := storage.Remove(dirPath)
-			if err != nil {
-				logger.Error(fmt.Sprintf("Remove Dir error:"), err)
-				return
+		if makeDirs.Has(dirPath) {
+			if renderDir.MakeFiles == 0 || storage.PathExist(renderDir.CustomPath) {
+				err := storage.Remove(dirPath)
+				if err != nil {
+					logger.Error(fmt.Sprintf("Remove Dir error:"), err)
+					return
+				}
+				logger.CleanDirSuccess(dirPath)
 			}
-			logger.CleanDirSuccess(dirPath)
 		}
 	}
 }
