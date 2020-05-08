@@ -19,6 +19,7 @@ type Project struct {
 	makeDirSuffix  *Collection
 	makeDirPrefix  *Collection
 	ignoreMakeDirs *Collection
+	makeDirs       *Collection
 	workspaces     []*Workspace
 	writer         *Writer
 	debug          bool
@@ -27,6 +28,12 @@ type Project struct {
 }
 
 func (p *Project) initMakeDirs() {
+	if p.makeDirs == nil {
+		p.makeDirs = NewCollection()
+	}
+}
+
+func (p *Project) initIgnoreMakeDirs() {
 	if p.ignoreMakeDirs == nil {
 		p.ignoreMakeDirs = NewCollection()
 	}
@@ -146,6 +153,7 @@ func (p *Project) collectMakePrefixAndSuffix() {
 	p.initMakeFilePrefix()
 	p.initMakeFileSuffix()
 	p.initMakeDirs()
+	p.initIgnoreMakeDirs()
 
 	for _, v := range p.workspaces {
 		v.collectMakePrefixAndSuffix()
@@ -171,6 +179,8 @@ func (p *Project) collectMakePrefixAndSuffix() {
 			for _, vv := range v.folders.All() {
 				p.ignoreMakeDirs.Add(filepath.Join(vv.dir, fmt.Sprintf("%s%s%s", vv.makePrefix, vv.name, vv.makeSuffix)))
 				p.ignoreMakeDirs.Add(filepath.Join(vv.dir, vv.name))
+				p.makeDirs.Add(filepath.Join(v.root, vv.dir, fmt.Sprintf("%s%s%s", vv.makePrefix, vv.name, vv.makeSuffix)))
+				p.makeDirs.Add(filepath.Join(v.root, vv.dir, vv.name))
 			}
 		}
 	}
@@ -186,7 +196,7 @@ func (p *Project) render() {
 }
 
 func (p *Project) clean() {
-	p.writer.clean()
+	p.writer.clean(p.makeDirs)
 	if !p.hideMakeDone {
 		logger.MakeDone()
 	}

@@ -32,3 +32,11 @@ func (p *Collection) Add(items ...string) {
 func (p *Collection) All() []string {
 	return p.list
 }
+
+func (p *Collection) Has(item string) bool {
+	p.initMap()
+	if _, ok := p._map[item]; ok {
+		return true
+	}
+	return false
+}

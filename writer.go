@@ -187,10 +187,10 @@ func (p *Writer) compareSnippet(snippet *Snippet, customPath string) {
 	}
 }
 
-func (p *Writer) clean() {
+func (p *Writer) clean(makeDirs *Collection) {
 
 	for filePath, renderFile := range p.renderFiles {
-		if renderFile.MakeContent == "" {
+		if renderFile.MakeContent == "" && !makeDirs.Has(filePath) {
 			err := storage.Remove(filePath)
 			if err != nil {
 				logger.Error(fmt.Sprintf("Remove file error:"), err)

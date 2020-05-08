@@ -1,6 +1,7 @@
 package snippet
 
 import (
+	"github.com/koyeo/snippet/storage"
 	"path/filepath"
 )
 
@@ -40,9 +41,10 @@ func (p *Folders) render(project *Project, workspace *Workspace) {
 		distPath = filepath.Join(workspace.root, v.dir, v.makePrefix+v.name+v.makeSuffix)
 		customPath = filepath.Join(workspace.root, v.dir, v.name)
 
-		v.initFiles()
-		v.files.render(project, distPath)
-
-		project.writer.addMakeRenderDir(distPath, customPath, len(v.files.All()))
+		if !storage.PathExist(customPath) {
+			v.initFiles()
+			v.files.render(project, distPath)
+			project.writer.addMakeRenderDir(distPath, customPath, len(v.files.All()))
+		}
 	}
 }
