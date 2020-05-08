@@ -35,7 +35,7 @@ func main() {
 	mainBlock.UsePackage(packageFmt)
 
 	s := snippet.NewSnippet(suffix.Go)
-	s.SetName("test")
+	s.SetName("test2")
 	s.SetNamespace("main")
 	s.SetDir("snippets2")
 	s.AddTag("build dev")
@@ -48,7 +48,7 @@ func main() {
 
 	// 定义工作空间
 	workspace1 := snippet.NewWorkspace()
-	workspace1.SetRoot("./example", true)
+	workspace1.SetRoot("./example2", true)
 	workspace1.AddFile(testFile)
 	workspace1.AddFolder(testFolder)
 	workspace1.AddIgnorePath("vendor")

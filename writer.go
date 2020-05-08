@@ -113,6 +113,7 @@ func (p *Writer) loadLocalRenderFiles(debug bool, paths []string, ignore, prefix
 	}
 
 	for _, path := range paths {
+
 		if !storage.PathExist(path) {
 			return
 		}

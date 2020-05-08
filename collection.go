@@ -18,6 +18,9 @@ func (p *Collection) initMap() {
 func (p *Collection) Add(items ...string) {
 	p.initMap()
 	for _, v := range items {
+		if v == "" {
+			continue
+		}
 		if _, ok := p._map[v]; ok {
 			continue
 		}

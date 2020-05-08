@@ -32,13 +32,13 @@ func (p *Folders) All() []*Folder {
 }
 
 func (p *Folders) render(project *Project, workspace *Workspace) {
-	for _, v := range p.folderList {
 
+	for _, v := range p.folderList {
 		var distPath string
 		var customPath string
 
 		distPath = filepath.Join(workspace.root, v.dir, v.makePrefix+v.name+v.makeSuffix)
-		customPath = filepath.Join(workspace.root, v.name)
+		customPath = filepath.Join(workspace.root, v.dir, v.name)
 
 		v.initFiles()
 		v.files.render(project, distPath)

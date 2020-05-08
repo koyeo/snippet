@@ -1,6 +1,7 @@
 package snippet
 
 import (
+	"fmt"
 	"github.com/flosch/pongo2"
 	"github.com/koyeo/snippet/logger"
 )
@@ -16,11 +17,18 @@ type Project struct {
 	makeFilePrefix *Collection
 	makeDirSuffix  *Collection
 	makeDirPrefix  *Collection
+	makeDirs       *Collection
 	workspaces     []*Workspace
 	writer         *Writer
 	debug          bool
 	ctx            pongo2.Context
 	hideMakeDone   bool
+}
+
+func (p *Project) initMakeDirs() {
+	if p.makeDirs == nil {
+		p.makeDirs = NewCollection()
+	}
 }
 
 func (p *Project) initFilterPaths() {
@@ -136,8 +144,10 @@ func (p *Project) collectMakePrefixAndSuffix() {
 	p.initMakeDirSuffix()
 	p.initMakeFilePrefix()
 	p.initMakeFileSuffix()
+	p.initMakeDirs()
 
 	for _, v := range p.workspaces {
+		v.collectMakePrefixAndSuffix()
 		if v.filterPaths != nil {
 			p.filterPaths.Add(v.filterPaths.All()...)
 		}
@@ -156,7 +166,14 @@ func (p *Project) collectMakePrefixAndSuffix() {
 		if v.makeFileSuffix != nil {
 			p.makeFileSuffix.Add(v.makeFileSuffix.All()...)
 		}
+		if v.folders != nil {
+			for _, vv := range v.folders.All() {
+				p.makeDirs.Add(v.root, vv.dir, fmt.Sprintf("%s%s%s", vv.makePrefix, vv.name, vv.makeSuffix))
+			}
+		}
 	}
+
+	p.ignorePaths.Add(p.makeDirs.All()...)
 }
 
 func (p *Project) render() {

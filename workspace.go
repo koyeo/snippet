@@ -73,7 +73,7 @@ func (p *Workspace) initMakeDirSuffix() {
 
 func (p *Workspace) SetRoot(root string, filter bool) {
 	p.root = root
-	if filter{
+	if filter {
 		p.filterRoot()
 	}
 }
@@ -95,7 +95,10 @@ func (p *Workspace) AddFile(files ...*File) {
 
 func (p *Workspace) AddFolder(folders ...*Folder) {
 	p.initFolders()
-	p.folders.Add(folders...)
+	for _,v:=range folders{
+		p.folders.Add(v)
+
+	}
 }
 
 func (p *Workspace) AddSnippet(snippets ...*Snippet) {
@@ -104,7 +107,6 @@ func (p *Workspace) AddSnippet(snippets ...*Snippet) {
 }
 
 func (p *Workspace) render(project *Project) {
-	p.collectMakePrefixAndSuffix()
 	p.renderSnippets(project)
 	p.renderFiles(project)
 	p.renderFolders(project)
