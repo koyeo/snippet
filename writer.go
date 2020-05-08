@@ -8,6 +8,7 @@ import (
 	"github.com/koyeo/snippet/storage"
 	"os"
 	"regexp"
+	"strings"
 )
 
 type RenderFile struct {
@@ -201,7 +202,9 @@ func (p *Writer) clean(makeDirs *Collection) {
 	}
 
 	for dirPath, renderDir := range p.renderDirs {
-
+		if strings.Contains(dirPath, "app-form") {
+			fmt.Println(dirPath, makeDirs.Has(dirPath), storage.PathExist(renderDir.CustomPath))
+		}
 		if makeDirs.Has(dirPath) && storage.PathExist(renderDir.CustomPath) {
 			err := storage.Remove(dirPath)
 			if err != nil {
