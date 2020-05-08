@@ -44,7 +44,7 @@ func (p *Folders) render(project *Project, workspace *Workspace) {
 		if !storage.PathExist(customPath) {
 			v.initFiles()
 			v.files.render(project, distPath)
-			project.writer.addMakeRenderDir(distPath, customPath, len(v.files.All()))
 		}
+		project.writer.addMakeRenderDir(distPath, customPath, len(v.files.All()))
 	}
 }

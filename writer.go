@@ -8,7 +8,6 @@ import (
 	"github.com/koyeo/snippet/storage"
 	"os"
 	"regexp"
-	"strings"
 )
 
 type RenderFile struct {
@@ -191,21 +190,20 @@ func (p *Writer) compareSnippet(snippet *Snippet, customPath string) {
 func (p *Writer) clean(makeDirs *Collection) {
 
 	for filePath, renderFile := range p.renderFiles {
-		if renderFile.MakeContent == "" && !makeDirs.Has(filePath) {
-			err := storage.Remove(filePath)
-			if err != nil {
-				logger.Error(fmt.Sprintf("Remove file error:"), err)
-				return
+		if !makeDirs.Has(renderFile.MakePath) {
+			if renderFile.MakeContent == "" && storage.PathExist(filePath) && storage.PathExist(renderFile.CustomPath) {
+				err := storage.Remove(filePath)
+				if err != nil {
+					logger.Error(fmt.Sprintf("Remove file error:"), err)
+					return
+				}
+				logger.CleanFileSuccess(filePath)
 			}
-			logger.CleanFileSuccess(filePath)
 		}
 	}
 
 	for dirPath, renderDir := range p.renderDirs {
-		if strings.Contains(dirPath, "app-form") {
-			fmt.Println(dirPath, makeDirs.Has(dirPath), storage.PathExist(renderDir.CustomPath))
-		}
-		if makeDirs.Has(dirPath) && storage.PathExist(renderDir.CustomPath) {
+		if makeDirs.Has(dirPath) && storage.PathExist(renderDir.CustomPath) && storage.PathExist(dirPath) {
 			err := storage.Remove(dirPath)
 			if err != nil {
 				logger.Error(fmt.Sprintf("Remove Dir error:"), err)
