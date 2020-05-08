@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/flosch/pongo2"
 	"github.com/koyeo/snippet/logger"
+	"path/filepath"
 )
 
 func NewProject() *Project {
@@ -17,7 +18,7 @@ type Project struct {
 	makeFilePrefix *Collection
 	makeDirSuffix  *Collection
 	makeDirPrefix  *Collection
-	makeDirs       *Collection
+	ignoreMakeDirs *Collection
 	workspaces     []*Workspace
 	writer         *Writer
 	debug          bool
@@ -26,8 +27,8 @@ type Project struct {
 }
 
 func (p *Project) initMakeDirs() {
-	if p.makeDirs == nil {
-		p.makeDirs = NewCollection()
+	if p.ignoreMakeDirs == nil {
+		p.ignoreMakeDirs = NewCollection()
 	}
 }
 
@@ -168,12 +169,13 @@ func (p *Project) collectMakePrefixAndSuffix() {
 		}
 		if v.folders != nil {
 			for _, vv := range v.folders.All() {
-				p.makeDirs.Add(v.root, vv.dir, fmt.Sprintf("%s%s%s", vv.makePrefix, vv.name, vv.makeSuffix))
+				p.ignoreMakeDirs.Add(filepath.Join(vv.dir, fmt.Sprintf("%s%s%s", vv.makePrefix, vv.name, vv.makeSuffix)))
+				p.ignoreMakeDirs.Add(filepath.Join(vv.dir, vv.name))
 			}
 		}
 	}
 
-	p.ignorePaths.Add(p.makeDirs.All()...)
+	p.ignorePaths.Add(p.ignoreMakeDirs.All()...)
 }
 
 func (p *Project) render() {
