@@ -19,12 +19,6 @@ func main() {
 	testFile.SetMakeSuffix(".make")
 	testFile.SetContent(`Hello world!`, nil)
 
-	// 定义生成目录
-	testFolder := snippet.NewFolder()
-	testFolder.SetName("test")
-	testFolder.SetDir("folder-dir")
-	testFolder.SetMakePrefix("make-")
-	testFolder.AddFile(testFile)
 
 	// 定义生成代码块文件
 	data := new(RenderData)
@@ -50,20 +44,12 @@ func main() {
 	workspace1 := snippet.NewWorkspace()
 	workspace1.SetRoot("./example2", true)
 	workspace1.AddFile(testFile)
-	workspace1.AddFolder(testFolder)
 	workspace1.AddIgnorePath("vendor")
 	workspace1.AddSnippet(s)
 
-	workspace2 := snippet.NewWorkspace()
-	workspace2.SetRoot("./example2", true)
-	workspace2.AddFile(testFile)
-	workspace2.AddFolder(testFolder)
-	workspace2.AddIgnorePath("vendor")
-	workspace2.AddSnippet(s)
-
 	// 定义项目
 	project := snippet.NewProject()
-	project.AddWorkspace(workspace1, workspace2)
+	project.AddWorkspace(workspace1)
 	project.Render()
 }
 

@@ -1,10 +1,8 @@
 package snippet
 
 import (
-	"fmt"
 	"github.com/flosch/pongo2"
 	"github.com/koyeo/snippet/logger"
-	"path/filepath"
 )
 
 func NewProject() *Project {
@@ -18,25 +16,11 @@ type Project struct {
 	makeFilePrefix *Collection
 	makeDirSuffix  *Collection
 	makeDirPrefix  *Collection
-	ignoreMakeDirs *Collection
-	makeDirs       *Collection
 	workspaces     []*Workspace
 	writer         *Writer
 	debug          bool
 	ctx            pongo2.Context
 	hideMakeDone   bool
-}
-
-func (p *Project) initMakeDirs() {
-	if p.makeDirs == nil {
-		p.makeDirs = NewCollection()
-	}
-}
-
-func (p *Project) initIgnoreMakeDirs() {
-	if p.ignoreMakeDirs == nil {
-		p.ignoreMakeDirs = NewCollection()
-	}
 }
 
 func (p *Project) initFilterPaths() {
@@ -101,7 +85,6 @@ func (p *Project) Render() {
 	p.initWriter()
 	p.collectMakePrefixAndSuffix()
 	p.loadLocalFiles()
-	p.loadLocalDirs()
 	p.render()
 	p.clean()
 }
@@ -113,36 +96,15 @@ func (p *Project) loadLocalFiles() {
 	p.initMakeFilePrefix()
 	p.initMakeFileSuffix()
 
-	ignorePaths := p.ignorePaths.All()
-	ignorePaths = append(ignorePaths, p.ignoreMakeDirs.All()...)
 	err := p.writer.loadLocalRenderFiles(
 		p.debug,
 		p.filterPaths.All(),
-		ignorePaths,
+		p.ignorePaths.All(),
 		p.makeFilePrefix.All(),
 		p.makeFileSuffix.All(),
 	)
 	if err != nil {
 		logger.Fatal("Load local render files error: ", err)
-	}
-}
-
-func (p *Project) loadLocalDirs() {
-
-	p.initFilterPaths()
-	p.initIgnorePaths()
-	p.initMakeDirPrefix()
-	p.initMakeDirSuffix()
-
-	err := p.writer.loadLocalRenderDirs(
-		p.debug,
-		p.filterPaths.All(),
-		p.ignorePaths.All(),
-		p.makeDirPrefix.All(),
-		p.makeDirSuffix.All(),
-	)
-	if err != nil {
-		logger.Fatal("Load local render dirs error: ", err)
 	}
 }
 
@@ -154,8 +116,6 @@ func (p *Project) collectMakePrefixAndSuffix() {
 	p.initMakeDirSuffix()
 	p.initMakeFilePrefix()
 	p.initMakeFileSuffix()
-	p.initMakeDirs()
-	p.initIgnoreMakeDirs()
 
 	for _, v := range p.workspaces {
 		v.collectMakePrefixAndSuffix()
@@ -177,14 +137,6 @@ func (p *Project) collectMakePrefixAndSuffix() {
 		if v.makeFileSuffix != nil {
 			p.makeFileSuffix.Add(v.makeFileSuffix.All()...)
 		}
-		if v.folders != nil {
-			for _, vv := range v.folders.All() {
-				p.ignoreMakeDirs.Add(filepath.Join(vv.dir, fmt.Sprintf("%s%s%s", vv.makePrefix, vv.name, vv.makeSuffix)))
-				p.ignoreMakeDirs.Add(filepath.Join(vv.dir, vv.name))
-				p.makeDirs.Add(filepath.Join(v.root, vv.dir, fmt.Sprintf("%s%s%s", vv.makePrefix, vv.name, vv.makeSuffix)))
-				p.makeDirs.Add(filepath.Join(v.root, vv.dir, vv.name))
-			}
-		}
 	}
 }
 
@@ -196,7 +148,7 @@ func (p *Project) render() {
 }
 
 func (p *Project) clean() {
-	p.writer.clean(p.makeDirs)
+	p.writer.clean()
 	if !p.hideMakeDone {
 		logger.MakeDone()
 	}

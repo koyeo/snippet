@@ -35,19 +35,12 @@ func NewWriter() (c *Writer) {
 
 type Writer struct {
 	renderFiles map[string]*RenderFile
-	renderDirs  map[string]*RenderDir
 	funcs       map[string]TemplateFunc
 }
 
 func (p *Writer) initRenderFiles() {
 	if p.renderFiles == nil {
 		p.renderFiles = make(map[string]*RenderFile)
-	}
-}
-
-func (p *Writer) initRenderDirs() {
-	if p.renderDirs == nil {
-		p.renderDirs = make(map[string]*RenderDir)
 	}
 }
 
@@ -66,25 +59,9 @@ func (p *Writer) initRenderFile(makePath string) {
 	}
 }
 
-func (p *Writer) initRenderDir(makePath string) {
-	p.initRenderDirs()
-	if p.renderDirs[makePath] == nil {
-		p.renderDirs[makePath] = &RenderDir{
-			MakePath: makePath,
-		}
-	}
-}
-
 func (p *Writer) addLocalRenderFile(filePath, content string) {
 	p.initRenderFile(filePath)
 	p.renderFiles[filePath].LocalContent = content
-}
-
-func (p *Writer) addLocalRenderDir(dirPath string) {
-	p.initRenderDirs()
-	p.renderDirs[dirPath] = &RenderDir{
-		MakePath: dirPath,
-	}
 }
 
 func (p *Writer) addMakeRenderFile(distPath, makePath, customPath, makeContent string, makeDiff bool) {
@@ -93,12 +70,6 @@ func (p *Writer) addMakeRenderFile(distPath, makePath, customPath, makeContent s
 	p.renderFiles[makePath].CustomPath = customPath
 	p.renderFiles[makePath].MakeContent = makeContent
 	p.renderFiles[makePath].CheckDiff = makeDiff
-}
-
-func (p *Writer) addMakeRenderDir(distPath, customPath string, makeFiles int) {
-	p.initRenderDir(distPath)
-	p.renderDirs[distPath].CustomPath = customPath
-	p.renderDirs[distPath].MakeFiles = makeFiles
 }
 
 func (p *Writer) addFunc(name string, _func TemplateFunc) {
@@ -135,30 +106,6 @@ func (p *Writer) loadLocalRenderFiles(debug bool, paths []string, ignore, prefix
 	return
 }
 
-func (p *Writer) loadLocalRenderDirs(debug bool, paths []string, ignore, prefix, suffix []string) (err error) {
-
-	if len(prefix) == 0 && len(suffix) == 0 {
-		return
-	}
-
-	for _, path := range paths {
-		if !storage.PathExist(path) {
-			return
-		}
-
-		dirs, err := storage.ReadDirs(debug, path, ignore, prefix, suffix)
-		if err != nil {
-			return err
-		}
-
-		for _, dir := range dirs {
-			p.addLocalRenderDir(dir)
-		}
-	}
-
-	return
-}
-
 func (p *Writer) compareSnippet(snippet *Snippet, customPath string) {
 
 	var err error
@@ -187,31 +134,21 @@ func (p *Writer) compareSnippet(snippet *Snippet, customPath string) {
 	}
 }
 
-func (p *Writer) clean(makeDirs *Collection) {
+func (p *Writer) clean() {
 
 	for filePath, renderFile := range p.renderFiles {
-		if !makeDirs.Has(renderFile.MakePath) {
-			if renderFile.MakeContent == "" && storage.PathExist(filePath) && storage.PathExist(renderFile.CustomPath) {
-				err := storage.Remove(filePath)
-				if err != nil {
-					logger.Error(fmt.Sprintf("Remove file error:"), err)
-					return
-				}
-				logger.CleanFileSuccess(filePath)
-			}
-		}
-	}
 
-	for dirPath, renderDir := range p.renderDirs {
-		if makeDirs.Has(dirPath) && storage.PathExist(renderDir.CustomPath) && storage.PathExist(dirPath) {
-			err := storage.Remove(dirPath)
+		if renderFile.MakeContent == "" && storage.PathExist(filePath) && storage.PathExist(renderFile.CustomPath) {
+			err := storage.Remove(filePath)
 			if err != nil {
-				logger.Error(fmt.Sprintf("Remove Dir error:"), err)
+				logger.Error(fmt.Sprintf("Remove file error:"), err)
 				return
 			}
-			logger.CleanDirSuccess(dirPath)
+			logger.CleanFileSuccess(filePath)
 		}
+
 	}
+
 }
 
 func (p *Writer) matchSegment(rule string, content string) (match bool) {

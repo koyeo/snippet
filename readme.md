@@ -82,21 +82,17 @@ import (
 )
 
 func main() {
-	testFile := snippet.NewFile()
-	testFile.SetName("test")
-	testFile.SetSuffix(".md")
-	testFile.SetMakeSuffix(".make")
-	testFile.SetContent(`Hello world!`, nil)
+    testFile := snippet.NewFile()
+    testFile.SetName("test")
+    testFile.SetSuffix(".md")
+    testFile.SetMakeSuffix(".make")
+    testFile.SetContent(`Hello world!`, nil)
+	
 
-	testFolder := snippet.NewFolder()
-	testFolder.SetName("test")
-	testFolder.SetMakePrefix("make-")
-	testFolder.AddFile(testFile)
-
-        workspace := snippet.NewWorkspace()
-        workspace.SetRoot("./make-example",true)
-        workspace.AddFile(testFile)
-        workspace.AddFolder(testFolder)
+    workspace := snippet.NewWorkspace()
+    workspace.SetRoot("./make-example",true)
+    workspace.AddFile(testFile)
+      
 
 	project := snippet.NewProject()
 	project.Render()

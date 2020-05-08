@@ -13,7 +13,6 @@ type Workspace struct {
 	makeDirPrefix  *Collection
 	ignorePaths    *Collection
 	files          *Files
-	folders        *Folders
 	snippets       *Snippets
 }
 
@@ -23,11 +22,6 @@ func (p *Workspace) initFiles() {
 	}
 }
 
-func (p *Workspace) initFolders() {
-	if p.folders == nil {
-		p.folders = NewFolders()
-	}
-}
 
 func (p *Workspace) initSnippets() {
 	if p.snippets == nil {
@@ -93,14 +87,6 @@ func (p *Workspace) AddFile(files ...*File) {
 	p.files.Add(files...)
 }
 
-func (p *Workspace) AddFolder(folders ...*Folder) {
-	p.initFolders()
-	for _,v:=range folders{
-		p.folders.Add(v)
-
-	}
-}
-
 func (p *Workspace) AddSnippet(snippets ...*Snippet) {
 	p.initSnippets()
 	p.snippets.Add(snippets...)
@@ -109,7 +95,6 @@ func (p *Workspace) AddSnippet(snippets ...*Snippet) {
 func (p *Workspace) render(project *Project) {
 	p.renderSnippets(project)
 	p.renderFiles(project)
-	p.renderFolders(project)
 }
 
 func (p *Workspace) collectMakePrefixAndSuffix() {
@@ -138,25 +123,6 @@ func (p *Workspace) collectMakePrefixAndSuffix() {
 			p.makeFileSuffix.Add(v.makeSuffix + v.suffix)
 		}
 	}
-
-	p.initFolders()
-	for _, v := range p.folders.All() {
-		v.initFiles()
-		for _, vv := range v.files.All() {
-			if vv.makePrefix != "" {
-				p.makeFilePrefix.Add(vv.makePrefix)
-			}
-			if vv.makeSuffix != "" {
-				p.makeFileSuffix.Add(vv.makeSuffix + vv.suffix)
-			}
-		}
-		if v.makePrefix != "" {
-			p.makeDirPrefix.Add(v.makePrefix)
-		}
-		if v.makeSuffix != "" {
-			p.makeDirSuffix.Add(v.makeSuffix)
-		}
-	}
 }
 
 func (p *Workspace) filterRoot() {
@@ -174,7 +140,3 @@ func (p *Workspace) renderFiles(project *Project) {
 	p.files.render(project, p.root)
 }
 
-func (p *Workspace) renderFolders(project *Project) {
-	p.initFolders()
-	p.folders.render(project, p)
-}
