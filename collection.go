@@ -30,7 +30,11 @@ func (p *Collection) Add(items ...string) {
 }
 
 func (p *Collection) All() []string {
-	return p.list
+	items := make([]string, 0)
+	for _, v := range p.list {
+		items = append(items, v)
+	}
+	return items
 }
 
 func (p *Collection) Has(item string) bool {

@@ -113,10 +113,12 @@ func (p *Project) loadLocalFiles() {
 	p.initMakeFilePrefix()
 	p.initMakeFileSuffix()
 
+	ignorePaths := p.ignorePaths.All()
+	ignorePaths = append(ignorePaths, p.ignoreMakeDirs.All()...)
 	err := p.writer.loadLocalRenderFiles(
 		p.debug,
 		p.filterPaths.All(),
-		p.ignorePaths.All(),
+		ignorePaths,
 		p.makeFilePrefix.All(),
 		p.makeFileSuffix.All(),
 	)
@@ -184,8 +186,6 @@ func (p *Project) collectMakePrefixAndSuffix() {
 			}
 		}
 	}
-
-	p.ignorePaths.Add(p.ignoreMakeDirs.All()...)
 }
 
 func (p *Project) render() {
