@@ -191,3 +191,11 @@ func WriteFile(path string, content []byte) (err error) {
 	}
 	return
 }
+
+func MakePath(path, makePrefix, name, makeSuffix, suffix string) string {
+	customPath := filepath.Join(path, name, suffix)
+	if PathExist(customPath) {
+		return customPath
+	}
+	return filepath.Join(path, makePrefix, name, makeSuffix, suffix)
+}
