@@ -199,3 +199,12 @@ func MakePath(path, makePrefix, name, makeSuffix, suffix string) string {
 	}
 	return filepath.Join(path, makePrefix+name+makeSuffix+suffix)
 }
+
+func MakeFile(path, makePrefix, name, makeSuffix, suffix string) string {
+	customName := name + suffix
+	customPath := filepath.Join(path, customName)
+	if PathExist(customPath) {
+		return customName
+	}
+	return makePrefix + name + makeSuffix + suffix
+}
