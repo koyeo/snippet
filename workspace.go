@@ -1,5 +1,7 @@
 package snippet
 
+import "path/filepath"
+
 func NewWorkspace() *Workspace {
 	return &Workspace{}
 }
@@ -21,7 +23,6 @@ func (p *Workspace) initFiles() {
 		p.files = NewFiles()
 	}
 }
-
 
 func (p *Workspace) initSnippets() {
 	if p.snippets == nil {
@@ -70,6 +71,10 @@ func (p *Workspace) SetRoot(root string, filter bool) {
 	if filter {
 		p.filterRoot()
 	}
+}
+
+func (p *Workspace) Join(paths ...string) string {
+	return filepath.Join(p.root, filepath.Join(paths...))
 }
 
 func (p *Workspace) AddFilterPath(paths ...string) {
@@ -139,4 +144,3 @@ func (p *Workspace) renderFiles(project *Project) {
 	p.initFiles()
 	p.files.render(project, p.root)
 }
-
