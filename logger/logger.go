@@ -58,17 +58,10 @@ func CleanDirSuccess(path string) {
 }
 
 func Warn(msg string, err ...error) {
-
 	if len(err) > 0 && err[0] != nil {
-		fmt.Println(chalk.Red, chalk.Bold.TextStyle(msg), err[0].Error())
+		fmt.Println(chalk.Yellow, chalk.Bold.TextStyle(msg), err[0].Error())
 	} else {
-		fmt.Println(chalk.Red, chalk.Bold.TextStyle(msg))
-	}
-
-	stack := string(debug.Stack())
-	lines := strings.Split(stack, "\n")
-	for _, v := range lines {
-		fmt.Println(chalk.Yellow, v)
+		fmt.Println(chalk.Yellow, chalk.Bold.TextStyle(msg))
 	}
 }
 
