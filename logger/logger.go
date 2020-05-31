@@ -2,7 +2,6 @@ package logger
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"github.com/ttacon/chalk"
 	"log"
@@ -65,11 +64,12 @@ func Warn(msg string, err ...error) {
 	}
 }
 
-func Error(msg string, err error) {
-	if err == nil {
-		err = errors.New("")
+func Error(msg string, err ...error) {
+	if len(err) > 0 && err[0] != nil {
+		fmt.Println(chalk.Red, chalk.Bold.TextStyle(msg), err[0].Error())
+	} else {
+		fmt.Println(chalk.Red, chalk.Bold.TextStyle(msg))
 	}
-	log.Println(chalk.Red.Color(chalk.Bold.TextStyle(msg)), chalk.Red.Color(err.Error()))
 }
 
 func Fatal(msg string, err ...error) {
