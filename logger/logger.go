@@ -58,17 +58,17 @@ func CleanDirSuccess(path string) {
 
 func Warn(msg string, err ...error) {
 	if len(err) > 0 && err[0] != nil {
-		log.Println(chalk.Yellow, chalk.Bold.TextStyle("[Warning] "+msg), err[0].Error())
+		log.Println(chalk.Yellow.NewStyle().Style(chalk.Bold.TextStyle("[Warning] "+msg)), chalk.Yellow.NewStyle().Style(err[0].Error()))
 	} else {
-		log.Println(chalk.Yellow, chalk.Bold.TextStyle("[Warning] "+msg))
+		log.Println(chalk.Yellow.NewStyle().Style(chalk.Bold.TextStyle("[Warning] " + msg)))
 	}
 }
 
 func Error(msg string, err ...error) {
 	if len(err) > 0 && err[0] != nil {
-		log.Println(chalk.Red, chalk.Bold.TextStyle("[Error] "+msg), err[0].Error())
+		log.Println(chalk.Red.NewStyle().Style(chalk.Bold.TextStyle("[Error] "+msg)), chalk.Red.NewStyle().Style(err[0].Error()))
 	} else {
-		log.Println(chalk.Red, chalk.Bold.TextStyle("[Error] "+msg))
+		log.Println(chalk.Red.NewStyle().Style(chalk.Bold.TextStyle("[Error] " + msg)))
 	}
 }
 
