@@ -149,6 +149,7 @@ func (p *Project) render() {
 
 func (p *Project) clean() {
 	p.writer.clean()
+	p.writer.cleanEmptyFolders(p.filterPaths.All())
 	if !p.hideMakeDone {
 		logger.MakeDone()
 	}

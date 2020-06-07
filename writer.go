@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/koyeo/snippet/logger"
 	"github.com/koyeo/snippet/storage"
+	"io/ioutil"
 	"os"
 	"regexp"
 )
@@ -82,14 +83,13 @@ func (p *Writer) loadLocalRenderFiles(debug bool, paths []string, ignore, prefix
 	if len(prefix) == 0 && len(suffix) == 0 {
 		return
 	}
-
 	for _, path := range paths {
 
 		if !storage.PathExist(path) {
-			return
+			continue
 		}
 
-		files, err := storage.ReadFiles(debug, path, ignore, prefix, suffix)
+		files, err := storage.ReadIgnoreFiles(debug, path, ignore, prefix, suffix)
 		if err != nil {
 			return err
 		}
@@ -103,6 +103,37 @@ func (p *Writer) loadLocalRenderFiles(debug bool, paths []string, ignore, prefix
 		}
 	}
 
+	return
+}
+
+func (p *Writer) cleanEmptyFolders(paths []string) () {
+
+	for _, path := range paths {
+
+		if !storage.PathExist(path) {
+			continue
+		}
+
+		dirs, err := storage.ReadDirs(path)
+		if err != nil {
+			return
+		}
+
+		for _, v := range dirs {
+			items, err := ioutil.ReadDir(v)
+			if err != nil {
+				logger.Fatal("Call ioutil.ReadDir error: ", err)
+				return
+			}
+			if len(items) == 0 {
+				err = storage.Remove(v)
+				if err != nil {
+					logger.Fatal("Call storage.Remove error: ", err)
+				}
+				logger.CleanDirSuccess(v)
+			}
+		}
+	}
 	return
 }
 
@@ -135,10 +166,8 @@ func (p *Writer) compareSnippet(snippet *Snippet, customPath string) {
 }
 
 func (p *Writer) clean() {
-
 	for filePath, renderFile := range p.renderFiles {
-
-		if renderFile.MakeContent == "" && storage.PathExist(filePath) && storage.PathExist(renderFile.CustomPath) {
+		if (renderFile.MakeContent == "" || storage.PathExist(renderFile.CustomPath)) && storage.PathExist(filePath) {
 			err := storage.Remove(filePath)
 			if err != nil {
 				logger.Error(fmt.Sprintf("Remove file error:"), err)
@@ -148,7 +177,6 @@ func (p *Writer) clean() {
 		}
 
 	}
-
 }
 
 func (p *Writer) matchSegment(rule string, content string) (match bool) {
