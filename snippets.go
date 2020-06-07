@@ -67,7 +67,7 @@ func (p *Snippets) render(project *Project, workspace *Workspace) {
 			content = TrimSpace(content)
 		}
 
-		if content != "" {
+		if !v.ignore {
 			if v.formatter != nil {
 				content, err = v.formatter(content)
 				if err != nil {

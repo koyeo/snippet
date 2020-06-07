@@ -160,14 +160,15 @@ func (p *Writer) compareSnippet(snippet *Snippet, customPath string) {
 			}
 		}
 	}
+
 	if i == len(items) {
-		snippet.SetIgnore(true)
+		snippet.ignore = true
 	}
 }
 
 func (p *Writer) clean() {
 	for filePath, renderFile := range p.renderFiles {
-		if (renderFile.MakeContent == "" || storage.PathExist(renderFile.CustomPath)) && storage.PathExist(filePath) {
+		if renderFile.MakeContent == "" && storage.PathExist(filePath) {
 			err := storage.Remove(filePath)
 			if err != nil {
 				logger.Error(fmt.Sprintf("Remove file error:"), err)
