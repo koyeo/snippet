@@ -1,7 +1,10 @@
 package snippet
 
 import (
+	"crypto/md5"
+	"encoding/hex"
 	"github.com/koyeo/snippet/logger"
+	"io"
 )
 
 func NewBlock(filter Filter, code string, data interface{}) *Block {
@@ -29,6 +32,12 @@ type Block struct {
 	code     string
 	packages *Packages
 	exist    bool
+}
+
+func (p *Block) md5() string {
+	h := md5.New()
+	_, _ = io.WriteString(h, p.code)
+	return hex.EncodeToString(h.Sum(nil))
 }
 
 func (p *Block) SetExist(exist bool) {

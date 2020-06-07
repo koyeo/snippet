@@ -24,8 +24,8 @@ type Snippet struct {
 	tags         []string
 	tmpBlocks    []*Block
 	tmpConstants []*Block
-	blocks       []*Block
-	constants    []*Block
+	blocks       *Blocks
+	constants    *Blocks
 	render       RenderFunc
 	formatter    FormatterFunc
 	ignore       bool
@@ -40,12 +40,26 @@ func (p *Snippet) SetIgnore(ignore bool) {
 	p.ignore = ignore
 }
 
+func (p *Snippet) initConstants() {
+	if p.constants == nil {
+		p.constants = NewBlocks()
+	}
+}
+
 func (p *Snippet) Constants() []*Block {
-	return p.constants
+	p.initConstants()
+	return p.constants.All()
+}
+
+func (p *Snippet) initBlocks() {
+	if p.blocks == nil {
+		p.blocks = NewBlocks()
+	}
 }
 
 func (p *Snippet) Blocks() []*Block {
-	return p.blocks
+	p.initBlocks()
+	return p.blocks.All()
 }
 
 func (p *Snippet) SetMakeSuffix(suffix string) {
@@ -67,11 +81,13 @@ func (p *Snippet) Commit() {
 	filePath := path.Join(p.path, p.name+p.suffix)
 	p.Cache().Add(filePath)
 
+	p.initConstants()
+	p.initBlocks()
 	for _, v := range p.tmpConstants {
 		if v.filter != nil && p.Cache().Match(filePath, v.filter.Rule()) {
 			continue
 		}
-		p.constants = append(p.constants, v)
+		p.constants.Add(v)
 	}
 	p.tmpConstants = make([]*Block, 0)
 
@@ -79,7 +95,7 @@ func (p *Snippet) Commit() {
 		if v.filter != nil && p.Cache().Match(filePath, v.filter.Rule()) {
 			continue
 		}
-		p.blocks = append(p.blocks, v)
+		p.blocks.Add(v)
 	}
 	p.tmpBlocks = make([]*Block, 0)
 }
@@ -152,7 +168,8 @@ func (p *Snippet) Namespace() string {
 }
 
 func (p *Snippet) Packages() (packages []*Package) {
-	for _, v := range p.blocks {
+	p.initBlocks()
+	for _, v := range p.blocks.All() {
 		if v.exist {
 			continue
 		}
