@@ -82,6 +82,7 @@ func makeContext(ctx pongo2.Context, input interface{}) pongo2.Context {
 	data["RDB"] = "}}"
 	data["LDP"] = "{%"
 	data["RDP"] = "%}"
+	data["SD"] = "`"
 
 	return data
 }
