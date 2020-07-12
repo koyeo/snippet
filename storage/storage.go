@@ -47,6 +47,35 @@ func ReadFile(path string) (content string, err error) {
 	return
 }
 
+func ReadFiles(path string) (files []string, err error) {
+
+	dir, err := ioutil.ReadDir(path)
+	if err != nil {
+		return
+	}
+
+	sep := string(os.PathSeparator)
+
+	for _, fi := range dir {
+		path := filepath.Join(path, sep, fi.Name())
+
+		if fi.IsDir() {
+			var items []string
+			items, err = ReadFiles(path)
+			if err != nil {
+				return
+			}
+			files = append(files, items...)
+		} else {
+
+			files = append(files, path)
+
+		}
+	}
+
+	return
+}
+
 func ReadIgnoreFiles(debug bool, path string, ignore []string, prefix []string, suffix []string) (files []string, err error) {
 
 	dir, err := ioutil.ReadDir(path)
