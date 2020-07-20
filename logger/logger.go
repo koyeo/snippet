@@ -86,7 +86,7 @@ func Fatal(msg string, err ...error) {
 		log.Println(chalk.Yellow, v)
 	}
 
-	os.Exit(1)
+	//os.Exit(1)
 }
 
 func DebugPrint(elem interface{}) {
