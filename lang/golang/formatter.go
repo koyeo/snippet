@@ -14,7 +14,7 @@ func Formatter(content string) (output string, err error) {
 		for k, v := range lines {
 			fmt.Printf("%d: %s\n", k+1, v)
 		}
-		logger.Fatal(fmt.Sprintf("Foramt error:\n %s", content), err)
+		logger.Fatal(fmt.Sprintf("Foramt error:\n%s", content), err)
 		return
 	}
 	output = string(bytes)

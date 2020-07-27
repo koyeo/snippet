@@ -41,6 +41,7 @@ func (p *Snippets) All() (snippets []*Snippet) {
 }
 
 func (p *Snippets) render(project *Project, workspace *Workspace) {
+
 	for _, v := range p.snippetList {
 
 		distFile := v.makePrefix + v.name + v.makeSuffix + v.suffix
@@ -57,11 +58,13 @@ func (p *Snippets) render(project *Project, workspace *Workspace) {
 
 		if v.render == nil {
 			logger.Fatal("Render snippet error: ", fmt.Errorf("\"%s\" not set render func", makePath))
+			return
 		}
 
 		content, err := v.render(project.ctx, v)
 		if err != nil {
 			logger.Fatal("Render snippet error: ", err)
+			return
 		}
 		if v.trimSpace {
 			content = TrimSpace(content)
@@ -71,7 +74,7 @@ func (p *Snippets) render(project *Project, workspace *Workspace) {
 			if v.formatter != nil {
 				content, err = v.formatter(content)
 				if err != nil {
-					logger.Fatal("Format snippet error: ", err)
+					return
 				}
 			}
 			project.writer.addMakeRenderFile(distPath, makePath, customPath, content, true)

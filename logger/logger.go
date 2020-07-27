@@ -3,6 +3,7 @@ package logger
 import (
 	"encoding/json"
 	"fmt"
+	gosxnotifier "github.com/deckarep/gosx-notifier"
 	"github.com/ttacon/chalk"
 	"log"
 	"os"
@@ -86,7 +87,21 @@ func Fatal(msg string, err ...error) {
 		log.Println(chalk.Yellow, v)
 	}
 
+	if len(err) > 0 {
+		panic(fmt.Errorf("%s:%s", msg, err[0].Error()))
+	}
+	panic(err)
 	//os.Exit(1)
+}
+
+func errorNote(err error) {
+	note := gosxnotifier.NewNotification(err.Error())
+	note.Title = "Mix"
+	//note.AppIcon = "mix.png"
+	note.Subtitle = "运行错误"
+	note.ContentImage = "mix.png"
+	note.Sound = gosxnotifier.Basso
+	_ = note.Push()
 }
 
 func DebugPrint(elem interface{}) {
