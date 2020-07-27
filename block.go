@@ -3,8 +3,11 @@ package snippet
 import (
 	"crypto/md5"
 	"encoding/hex"
+	"fmt"
 	"github.com/koyeo/snippet/logger"
 	"io"
+	"log"
+	"strings"
 )
 
 func NewBlock(filter Filter, code string, data interface{}) *Block {
@@ -74,11 +77,16 @@ func (p *Block) Filter() (filter Filter) {
 
 func (p *Block) SetCode(code string, data interface{}) {
 
-	code, err := Render(nil, code, data)
+	_code, err := Render(nil, code, data)
 	if err != nil {
+		log.Println("render code:")
+		items := strings.Split(code, "\n")
+		for i, v := range items {
+			fmt.Printf("%d: %s\n", i+1, v)
+		}
 		logger.Fatal("render content error: ", err)
 	}
-	p.code = code
+	p.code = _code
 	return
 }
 
