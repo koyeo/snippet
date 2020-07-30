@@ -88,6 +88,7 @@ func Fatal(msg string, err ...error) {
 	}
 
 	if len(err) > 0 {
+		debug.PrintStack()
 		panic(fmt.Errorf("%s:%s", msg, err[0].Error()))
 	}
 	panic(err)
